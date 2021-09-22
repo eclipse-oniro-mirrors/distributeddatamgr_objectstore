@@ -61,7 +61,7 @@ Small-system devices can be connected to large-system devices. Currently, only u
 ### How to Develop
  #### 1. Create a project.
   Configure the **build.gn** file.
-•    Add the following configuration to the **public_deps** node:
+•	Add the following configuration to the **public_deps** node:
 
 ```
 public_deps = [
@@ -70,7 +70,7 @@ public_deps = [
 
 ```
 
-•    Set the C++ version to **C++17**.
+•	Set the C++ version to **C++17**.
 
 ```
  static_library("objectstoremgr") {
