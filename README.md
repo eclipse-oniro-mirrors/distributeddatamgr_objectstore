@@ -8,9 +8,9 @@ The distributed data object management framework is an object-oriented in-memory
 
 The distributed data object management framework consists of the following components:
 
- Data object: an instance of the data object model class used to store the runtime data of an application.
+ •	Data object: an instance of the data object model class used to store the runtime data of an application.
 
- Data object store: a data object management class used to insert, query, delete, and subscribe to data objects by using the data object store APIs.
+ •	Data object store: a data object management class used to insert, query, delete, and subscribe to data objects by using the data object store APIs.
 
 ## Limitations and Constraints
 
@@ -73,11 +73,12 @@ public_deps = [
   b. Set the C++ version to **C++17**.
 
 ```
- dependencies {
- 	implementation fileTree(dir: 'libs', include: ['*.jar'])
-    annotationProcessor files('libs/objectstore_annotations_java.jar',
-            'libs/objectstore_annotations_processor_java.jar','libs/javapoet_java.jar', 'libs/objectstore_java.jar')
- }
+ static_library("objectstoremgr") {
+ configs -= [ "//build/lite/config:language_cpp" ]
+  cflags = [ "-fPIC" ]
+   cflags_cc = cflags
+   cflags_cc += [ "-std=c++17" ]
+ configs += [ ":objectStore_config" ]
 ```
   #### 2. Obtain a **DistributedObjectStoreManager** instance.
   ```
@@ -98,7 +99,8 @@ TEST_ASSERT_TRUE(store != nullptr);
  TEST_ASSERT_TRUE(object != nullptr);
 ```
 #### 5. Modify the data object at the local device.
-```
+```c
+// Change the value of **name** to **myTestName**.
 int ret = object->PutString("name", "myTestName");
 TEST_ASSERT_TRUE(ret == 0);
 ret = object->PutInt("age", 18);
