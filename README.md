@@ -60,8 +60,9 @@ Small-system devices can be connected to large-system devices. Currently, only u
 | uint32_t PutByte(const std::string &key, const int8_t &value) | Adds or updates an attribute of the **int8_t** type. <br>**key** indicates the attribute name, which corresponds to the object name identified by **@Field** on the large-system device. <br>**value** indicates the new value of the attribute.|
 ### How to Develop
  #### 1. Create a project.
-  Configure the **build.gn** file.
-•	Add the following configuration to the **public_deps** node:
+Configure the **build.gn** file.
+
+ •	Add the following configuration to the **public_deps** node:
 
 ```
 public_deps = [
