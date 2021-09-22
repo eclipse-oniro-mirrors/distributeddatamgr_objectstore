@@ -61,7 +61,7 @@ Small-system devices can be connected to large-system devices. Currently, only u
 ### How to Develop
  #### 1. Create a project.
   Configure the **build.gn** file.
-a. Add the following configuration to the **public_deps** node:
+•    Add the following configuration to the **public_deps** node:
 
 ```
 public_deps = [
@@ -70,7 +70,7 @@ public_deps = [
 
 ```
 
-  b. Set the C++ version to **C++17**.
+•    Set the C++ version to **C++17**.
 
 ```
  static_library("objectstoremgr") {
@@ -100,7 +100,7 @@ TEST_ASSERT_TRUE(store != nullptr);
 ```
 #### 5. Modify the data object at the local device.
 ```c
-// Change the value of **name** to **myTestName**.
+// Change the value of name to myTestName.
 int ret = object->PutString("name", "myTestName");
 TEST_ASSERT_TRUE(ret == 0);
 ret = object->PutInt("age", 18);
