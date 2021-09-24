@@ -101,10 +101,6 @@ const std::vector<std::string> &FlatObjectStore::GetRemoteStoreIds()
 uint32_t FlatObjectStore::Put(const FlatObject &flatObject)
 {
     if (IsLocalObject(flatObject.GetId())) {
-        char* tmp = new char[flatObject.GetId().size() + 1];
-        memcpy_s(tmp, flatObject.GetId().size(), flatObject.GetId().data(), flatObject.GetId().size());
-        tmp[flatObject.GetId().size()] = 0;
-        LOG_ERROR("start put: %s", tmp);
         uint32_t status = storageEngine_->PutHash(flatObject.GetId(), flatObject.GetFields());
         if (status != SUCCESS) {
             LOG_ERROR("FlatObjectStore: Failed to put object to local storage");

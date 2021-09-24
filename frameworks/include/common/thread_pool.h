@@ -25,7 +25,6 @@
 #include <vector>
 
 namespace OHOS::ObjectStore {
-
 const int INVALID_SEMA_VALUE = -1;
 
 class ThreadPool {
@@ -38,13 +37,6 @@ public:
     uint32_t Start(int threadsNum);
     void Stop();
     void AddTask(const Task& f);
-    /*void SetMaxTaskNum(int maxSize) { maxTaskNum_ = maxSize; }
-
-    // for testability
-    size_t GetMaxTaskNum() const { return maxTaskNum_; }
-    size_t GetThreadsNum() const { return threads_.size(); }
-    std::string GetName() const { return myName_; }*/
-
 private:
     // tasks in the queue reach the maximum set by maxQueueSize, means thread pool is full load.
     bool Overloaded() const;
@@ -61,8 +53,6 @@ private:
     size_t maxTaskNum_;
     bool running_;
 };
-
 } // namespace OHOS
-
 #endif
 

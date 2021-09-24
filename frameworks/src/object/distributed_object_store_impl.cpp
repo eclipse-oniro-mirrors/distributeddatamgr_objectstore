@@ -21,7 +21,8 @@
 #include "object_utils.h"
 
 namespace OHOS::ObjectStore {
-DistributedObjectStoreImpl::DistributedObjectStoreImpl(FlatObjectStore *flatObjectStore) : flatObjectStore_(flatObjectStore)
+DistributedObjectStoreImpl::DistributedObjectStoreImpl(FlatObjectStore *flatObjectStore)
+    : flatObjectStore_(flatObjectStore)
 {}
 
 DistributedObjectStoreImpl::~DistributedObjectStoreImpl()
@@ -64,9 +65,8 @@ DistributedObject *DistributedObjectStoreImpl::CreateObject(const std::string &c
     DistributedObject *object = nullptr;
     const std::vector<std::string> remoteIds = flatObjectStore_->GetRemoteStoreIds();
     for (const auto &deviceId : flatObjectStore_->GetRemoteStoreIds()) {
-        /*objectId //dataobject:// + deviceId + SEPARATOR + user + SEPARATOR + bundleName + SEPARATOR + store+SEPARATOR + className + SEPARATOR + key;*/
-        std::string prefix = ObjectUtils::GenObjectIdPrefix(deviceId, DEFAULT_USER_ID, flatObjectStore_->GetBundleName(),
-            flatObjectStore_->GetName());
+        std::string prefix = ObjectUtils::GenObjectIdPrefix(deviceId, DEFAULT_USER_ID,
+            flatObjectStore_->GetBundleName(), flatObjectStore_->GetName());
         std::string oid = GenerateObjectId(prefix, classPath, key);
         uint32_t errCode = flatObjectStore_->Get(StringUtils::StrToBytes(oid), *flatObject);
         LOG_INFO("get %s errCode %d", oid.c_str(), errCode);
@@ -101,7 +101,7 @@ void DistributedObjectStoreImpl::Close()
 {
     {
         std::unique_lock<std::shared_mutex> cacheLock(dataMutex_);
-        for (DistributedObjectImpl * item:objects_) {
+        for (DistributedObjectImpl* item:objects_) {
             flatObjectStore_->Delete(item->GetObject()->GetId());
             delete item;
         }

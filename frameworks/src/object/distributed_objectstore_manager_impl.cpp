@@ -34,7 +34,8 @@ DistributedObjectStoreManagerImpl::~DistributedObjectStoreManagerImpl()
     }
 }
 
-DistributedObjectStore *DistributedObjectStoreManagerImpl::Create(const std::string &bundleName, const std::string &sessionId)
+DistributedObjectStore *DistributedObjectStoreManagerImpl::Create(const std::string &bundleName,
+    const std::string &sessionId)
 {
     std::unique_lock<std::shared_mutex> lock(storeManagerMutex_);
     if (stores_.count(bundleName + sessionId) != 0) {

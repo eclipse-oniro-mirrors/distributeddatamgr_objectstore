@@ -81,10 +81,6 @@ void LocalObjectTask::HandleGetRequest(const std::shared_ptr<Message> &message)
     getOperation->GetOperationValue(value);
     Bytes key;
     getOperation->GetOperationKey(key);
-    char* tmp = new char[key.size() + 1];
-    memcpy_s(tmp, key.size(), key.data(), key.size());
-    tmp[key.size()] = 0;
-    LOG_ERROR("hanlu get: %s", tmp);
     std::shared_ptr<Operation> putOperation = std::make_shared<PutOperation>(getOperation->GetDataType(), key, value);
     if (putOperation == nullptr) {
         LOG_ERROR("LocalObjectTask-%s: fail to create operation", __func__);

@@ -26,10 +26,9 @@ FlatObjectStorageEngine::~FlatObjectStorageEngine()
         return;
     }
     std::unique_lock<std::shared_mutex> lock(operationMutex_);
-    LOG_INFO("sunpeng: Crash! begine %p", hashDic_); // TODO
     delete hashDic_;
     hashDic_ = nullptr;
-    LOG_INFO("sunpeng: Crash! end %p", hashDic_); // TODO
+    LOG_INFO("Crash! end %p", hashDic_);
 }
 
 uint32_t FlatObjectStorageEngine::Open()
@@ -40,7 +39,7 @@ uint32_t FlatObjectStorageEngine::Open()
     }
     std::unique_lock<std::shared_mutex> lock(operationMutex_);
     hashDic_ = new (std::nothrow) std::map<Key, std::map<Field, Value>>;
-    if (hashDic_== nullptr) {
+    if (hashDic_ == nullptr) {
         LOG_ERROR("FlatObjectDatabase: Failed to open, error: malloc redis db failed");
         return ERR_NOMEM;
     }
@@ -80,12 +79,16 @@ uint32_t FlatObjectStorageEngine::PutHash(const Key &key, const std::map<Field, 
     if (!opened_) {
         return ERR_DB_NOT_INIT;
     }
-    char* tmp = new char[key.size() + 1];
-    memcpy_s(tmp, key.size(), key.data(), key.size());
-    tmp[key.size()] = 0;
-    LOG_ERROR("hanlu puthash: %s", tmp);
-    LOG_INFO("MapStoreExecutor-%s: put %lu", __func__, fieldValues.size());
     std::unique_lock<std::shared_mutex> lock(operationMutex_);
+    std::map<Field, Value> result;
+    if (hashDic_->count(key) != 0) {
+        result = hashDic_->at(key);
+        for(auto &item : fieldValues) {
+            result.insert_or_assign(item.first, item.second);
+        }
+    } else {
+        result = fieldValues;
+    }
     hashDic_->insert_or_assign(key, fieldValues);
     return SUCCESS;
 }
@@ -99,11 +102,6 @@ uint32_t FlatObjectStorageEngine::GetHash(const Key &key, std::map<Field, Value>
     if (hashDic_->count(key) != 0) {
         result = hashDic_->at(key);
     }
-    char* tmp = new char[key.size() + 1];
-    memcpy_s(tmp, key.size(), key.data(), key.size());
-    tmp[key.size()] = 0;
-    LOG_ERROR("hanlu gethash: %s", tmp);
-    LOG_INFO("MapStoreExecutor-%s: get %lu", __func__, result.size());
     return SUCCESS;
 }
 

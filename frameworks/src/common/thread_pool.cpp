@@ -19,9 +19,8 @@
 #include <memory>
 
 namespace OHOS::ObjectStore {
-
 ThreadPool::ThreadPool(const std::string& name)
-        : myName_(name), maxTaskNum_(0), running_(false)
+    : myName_(name), maxTaskNum_(0), running_(false)
 {
 }
 
@@ -45,7 +44,7 @@ uint32_t ThreadPool::Start(int numThreads)
     threads_.reserve(numThreads);
 
     for (int i = 0; i < numThreads; ++i) {
-        threads_.push_back(std::thread(&ThreadPool::WorkInThread,this));
+        threads_.push_back(std::thread(&ThreadPool::WorkInThread, this));
     }
     return SUCCESS;
 }
@@ -111,5 +110,4 @@ void ThreadPool::WorkInThread()
         }
     }
 }
-
 } // namespace OHOS

@@ -28,7 +28,5 @@ public:
     virtual DistributedObjectStore *Create(const std::string &bundleName, const std::string &sessionId) = 0;
     virtual uint32_t Destroy(const std::string &bundleName, const std::string &sessionId) = 0;
 };
-
-
 }  // namespace OHOS
 #endif // DISTRIBUTED_OBJECT_MANAGER_H

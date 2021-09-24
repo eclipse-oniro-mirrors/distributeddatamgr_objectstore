@@ -17,12 +17,8 @@
 #include <chrono>
 #include <thread>
 #include <functional>
-//#include "iservice_registry.h"
 #include "objectstore_errors.h"
 #include "rpc_session.h"
-//#include "string_ex.h"
-//#include "system_ability_definition.h"
-//#include "system_ability_manager_proxy.h"
 
 namespace OHOS::ObjectStore {
 namespace {
@@ -40,7 +36,6 @@ RPCNetwork::~RPCNetwork()
 
 uint32_t RPCNetwork::Init()
 {
-    LOG_INFO("RPCNetwork-%s,hanlu start ", __func__);
     networkListener_ = std::make_shared<SoftBusListener>(this);
     if (networkListener_ == nullptr) {
         return ERR_NOMEM;
@@ -48,7 +43,6 @@ uint32_t RPCNetwork::Init()
 
     networkListener_->Register();
     dataManager_.Init(networkListener_);
-    LOG_INFO("RPCNetwork-%s,hanlu end ", __func__);
     return SUCCESS;
 }
 
@@ -118,12 +112,11 @@ void RPCNetwork::CloseSession(const std::string &networkId)
         std::unique_lock<std::shared_mutex> lock(sessionCacheMutex_);
         sessionCache_.erase(networkId);
     }
-
 }
 
 int32_t RPCNetwork::OnSessionOpened(const std::string& deviceId)
 {
-    SessionInfo* sessionInfo;
+    SessionInfo* sessionInfo = nullptr;
     {
         std::unique_lock<std::shared_mutex> lock(sessionCacheMutex_);
         sessionInfo = &sessionCache_[deviceId];
@@ -251,17 +244,18 @@ void SoftBusListener::OnMessageReceived(int sessionId, const void *data, uint32_
         LOG_INFO("Network-%s: null", __func__);
         return;
     }
-    LOG_ERROR("Network-%s: hanlu OnMessageReceived %d", __func__, len);
+    LOG_ERROR("Network-%s: OnMessageReceived %d", __func__, len);
     network_->OnMessageReceived(network_->GetDeviceIdBySession(sessionId), (char *)data, len);
 }
 
 RPCNetwork *SoftBusListener::network_ = nullptr;
 SoftBusListener::SoftBusListener(RPCNetwork *rpcNetwork)
 {
-    network_= rpcNetwork;
+    network_ = rpcNetwork;
 }
 
-SoftBusListener::~SoftBusListener() {
+SoftBusListener::~SoftBusListener()
+{
     UnRegister();
     network_ = nullptr;
 }
@@ -283,16 +277,14 @@ uint32_t SoftBusListener::Register()
     if (nodeStateCallback_ == nullptr) {
         return ERR_NOMEM;
     }
-
     
     sessionListener_ = new (std::nothrow) ISessionListener;
     if (sessionListener_ == nullptr) {
-       return ERR_NOMEM;
+        return ERR_NOMEM;
     }
 
     sessionListener_->OnSessionOpened = OnSessionOpened;
     sessionListener_->OnBytesReceived = OnMessageReceived;
-    // sessionListener_->OnMessageReceived = nullptr;
     sessionListener_->OnSessionClosed = OnSessionClosed;
 
     nodeStateCallback_->events = EVENT_NODE_STATE_ONLINE | EVENT_NODE_STATE_OFFLINE;

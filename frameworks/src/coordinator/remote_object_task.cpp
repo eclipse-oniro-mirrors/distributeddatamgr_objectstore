@@ -222,10 +222,6 @@ uint32_t RemoteObjectTask::DoGetRemote(const Bytes &key, std::shared_ptr<Operati
     operation.assign(ptr, ptr + size);
     std::shared_ptr<Message> request = std::make_shared<GetRequest>(idGenerator_++, std::move(operation));
     std::shared_ptr<Message> response = nullptr;
-    char* tmp = new char[key.size() + 1];
-    memcpy_s(tmp, key.size(), key.data(), key.size());
-    tmp[key.size()] = 0;
-    LOG_ERROR("hanlu send get: %s", tmp);
     auto ret = SendMessage(GetObjectHostId(key), request, response);
     if (ret != SUCCESS || response == nullptr) {
         LOG_ERROR("RemoteObjectTask-%s: fail to send request (%d)", __func__, ret);

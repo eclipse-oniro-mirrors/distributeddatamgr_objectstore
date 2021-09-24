@@ -16,10 +16,8 @@
 #ifndef OBJECT_STORE_LOGGER_H
 #define OBJECT_STORE_LOGGER_H
 
-/* #ifdef HILOG_ENABLE
-
+#ifdef HILOG_ENABLE
 #include "hilog/log.h"
-
 namespace OHOS::ObjectStore {
 static const OHOS::HiviewDFX::HiLogLabel LABEL = { LOG_CORE, 0xD001650, "ObjectStore" };
 
@@ -28,9 +26,8 @@ static const OHOS::HiviewDFX::HiLogLabel LABEL = { LOG_CORE, 0xD001650, "ObjectS
 #define LOG_WARN(...) ((void)OHOS::HiviewDFX::HiLog::Warn(LABEL, __VA_ARGS__))
 #define LOG_ERROR(...) ((void)OHOS::HiviewDFX::HiLog::Error(LABEL, __VA_ARGS__))
 #define LOG_FATAL(...) ((void)OHOS::HiviewDFX::HiLog::Fatal(LABEL, __VA_ARGS__))
-   
 }  // namespace OHOS::ObjectStore
-#else*/
+#else
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -38,7 +35,5 @@ static const OHOS::HiviewDFX::HiLogLabel LABEL = { LOG_CORE, 0xD001650, "ObjectS
 #define LOG_ERROR(fmt, ...) printf("[E][ObjectStore]%s: " fmt "\n", __FUNCTION__, ##__VA_ARGS__)
 #define LOG_INFO(fmt, ...) printf("[I][ObjectStore]%s: " fmt "\n", __FUNCTION__, ##__VA_ARGS__)
 #define LOG_WARN(fmt, ...) printf("[W][ObjectStore]%s: " fmt "\n", __FUNCTION__, ##__VA_ARGS__)
-//#endif
-
-//#endif
-#endif  // OBJECT_STORE_LOGGER_H
+#endif // #ifdef HILOG_ENABLE
+#endif // OBJECT_STORE_LOGGER_H

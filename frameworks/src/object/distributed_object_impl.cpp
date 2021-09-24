@@ -29,17 +29,15 @@ DistributedObjectImpl::~DistributedObjectImpl()
 }
 
 namespace {
-int32_t VAL_NULL = -1;      // null
-int32_t VAL_STRING = 0;     // string
-int32_t VAL_INTEGER = 1;    // integer
-int32_t VAL_BOOLEAN = 2;    // boolean
-int32_t VAL_SHORT = 3;      // short
-int32_t VAL_LONG = 4;       // long
-int32_t VAL_FLOAT = 5;      // float
-int32_t VAL_DOUBLE = 6;     // double
-int32_t VAL_CHARACTER = 7;  // character
-int32_t VAL_BYTE = 8;  // character
-int32_t VAL_OBJECT = 9;  // character
+static int32_t stringVal = 0;     // string
+static int32_t intergerVal = 1;    // integer
+static int32_t booleanVal = 2;    // boolean
+static int32_t shortVal = 3;      // short
+static int32_t longVal = 4;       // long
+static int32_t floatVal = 5;      // float
+static int32_t doubleVal = 6;     // double
+static int32_t characterVal = 7;  // character
+static int32_t byteVal = 8;  // character
 
 inline bool IsBigEndian()
 {
@@ -99,14 +97,15 @@ uint32_t DistributedObjectImpl::PutChar(const std::string &key, char value)
 {
     Bytes data;
     uint16_t val = value;
-    TransBytes(&val, sizeof(val), VAL_CHARACTER, data);
+    TransBytes(&val, sizeof(val), characterVal, data);
     flatObject_->SetField(StrToFieldBytes(key), data);
     return SUCCESS;
 }
 
-uint32_t DistributedObjectImpl::PutInt(const std::string &key, int32_t value) {
+uint32_t DistributedObjectImpl::PutInt(const std::string &key, int32_t value)
+{
     Bytes data;
-    TransBytes(&value, sizeof(value), VAL_INTEGER, data);
+    TransBytes(&value, sizeof(value), intergerVal, data);
     flatObject_->SetField(StrToFieldBytes(key), data);
     return SUCCESS;
 }
@@ -114,7 +113,7 @@ uint32_t DistributedObjectImpl::PutInt(const std::string &key, int32_t value) {
 uint32_t DistributedObjectImpl::PutShort(const std::string &key, int16_t value)
 {
     Bytes data;
-    TransBytes(&value, sizeof(value), VAL_SHORT, data);
+    TransBytes(&value, sizeof(value), shortVal, data);
     flatObject_->SetField(StrToFieldBytes(key), data);
     return SUCCESS;
 }
@@ -123,7 +122,7 @@ uint32_t DistributedObjectImpl::PutShort(const std::string &key, int16_t value)
 Bytes DistributedObjectImpl::StrToFieldBytes(const std::string &src)
 {
     Bytes data;
-    PutNum(0, &VAL_STRING, sizeof(VAL_STRING), data);
+    PutNum(0, &stringVal, sizeof(stringVal), data);
     Bytes dst = StringUtils::StrToBytes(src);
     data.insert(data.end(), dst.begin(), dst.end());
     return data;
@@ -132,7 +131,7 @@ Bytes DistributedObjectImpl::StrToFieldBytes(const std::string &src)
 uint32_t DistributedObjectImpl::PutLong(const std::string &key, int64_t value)
 {
     Bytes data;
-    TransBytes(&value, sizeof(value), VAL_LONG, data);
+    TransBytes(&value, sizeof(value), longVal, data);
     flatObject_->SetField(StrToFieldBytes(key), data);
     return SUCCESS;
 }
@@ -140,7 +139,7 @@ uint32_t DistributedObjectImpl::PutLong(const std::string &key, int64_t value)
 uint32_t DistributedObjectImpl::PutFloat(const std::string &key, float value)
 {
     Bytes data;
-    TransBytes(&value, sizeof(value), VAL_FLOAT, data);
+    TransBytes(&value, sizeof(value), floatVal, data);
     flatObject_->SetField(StrToFieldBytes(key), data);
     return SUCCESS;
 }
@@ -148,7 +147,7 @@ uint32_t DistributedObjectImpl::PutFloat(const std::string &key, float value)
 uint32_t DistributedObjectImpl::PutDouble(const std::string &key, double value)
 {
     Bytes data;
-    TransBytes(&value, sizeof(value), VAL_DOUBLE, data);
+    TransBytes(&value, sizeof(value), doubleVal, data);
     flatObject_->SetField(StrToFieldBytes(key), data);
     return SUCCESS;
 }
@@ -156,8 +155,8 @@ uint32_t DistributedObjectImpl::PutDouble(const std::string &key, double value)
 uint32_t DistributedObjectImpl::PutBoolean(const std::string &key, bool value)
 {
     Bytes data;
-    int32_t val = value?1:0;
-    TransBytes(&val, sizeof(val), VAL_BOOLEAN, data);
+    int32_t val = value ? 1 : 0;
+    TransBytes(&val, sizeof(val), booleanVal, data);
     flatObject_->SetField(StrToFieldBytes(key), data);
     return SUCCESS;
 }
@@ -171,7 +170,7 @@ uint32_t DistributedObjectImpl::PutString(const std::string &key, const std::str
 uint32_t DistributedObjectImpl::PutByte(const std::string &key, int8_t value)
 {
     Bytes data;
-    TransBytes(&value, sizeof(value), VAL_BYTE, data);
+    TransBytes(&value, sizeof(value), byteVal, data);
     flatObject_->SetField(StrToFieldBytes(key), data);
     return SUCCESS;
 }

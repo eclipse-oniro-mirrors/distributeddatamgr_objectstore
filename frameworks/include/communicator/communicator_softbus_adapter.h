@@ -33,9 +33,10 @@ static const char *PKG_NAME = "com.objectstore.foundation";
 class CommunicatorSoftbusAdapter {
 public:
     int Init(std::shared_ptr<SoftBusListener> &listener);
-     uint32_t OpenSoftbusLink(const std::string &networkName, const std::string &networkId);
+    uint32_t OpenSoftbusLink(const std::string &networkName, const std::string &networkId);
     uint32_t Destroy();
-    uint32_t SendMsg(const std::string &networkId, const uint8_t *data, uint32_t dataSize, int32_t type = TYPE_SEND_BYTE);
+    uint32_t SendMsg(const std::string &networkId, const uint8_t *data, uint32_t dataSize,
+        int32_t type = TYPE_SEND_BYTE);
     uint32_t GetDeviceIdBySession(int sessionId, std::string &deviceId); // return empty when session not existed
 private:
     std::map<std::string, int32_t> sessionDevDic_;  // networikId-sessionId

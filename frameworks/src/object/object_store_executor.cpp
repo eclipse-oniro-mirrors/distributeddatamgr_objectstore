@@ -57,11 +57,6 @@ uint32_t MapStoreExecutor::Put(const Bytes &key, const std::any &value)
         return SUCCESS;
     }
     const std::map<Field, Value> &mapValue = std::any_cast<const std::map<Field, Value> &>(value);
-    char* tmp = new char[key.size() + 1];
-    memcpy_s(tmp, key.size(), key.data(), key.size());
-    tmp[key.size()] = 0;
-    LOG_ERROR("hanlu put: %s", tmp);
-    LOG_INFO("MapStoreExecutor-%s: put %lu %s", __func__, mapValue.size(), tmp);
     return store->PutHash(key, mapValue);
 }
 
@@ -79,11 +74,6 @@ uint32_t MapStoreExecutor::Get(const Bytes &key, std::any &value)
         return ERR_HASHDB_GET;
     }
     value = mapValue;
-    char* tmp = new char[key.size() + 1];
-    memcpy_s(tmp, key.size(), key.data(), key.size());
-    tmp[key.size()] = 0;
-    LOG_ERROR("hanlu get: %s", tmp);
-    LOG_INFO("MapStoreExecutor-%s: get %lu %s", __func__, mapValue.size(), tmp);
     return result;
 }
 
