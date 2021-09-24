@@ -22,8 +22,8 @@
 #include "rpc_network.h"
 
 namespace OHOS::ObjectStore {
-static const char *SESSION_NAME = "objectstore";
-static char const *GROUP_ID = "";
+static constexpr const char *SESSION_NAME = "objectstore";
+static constexpr const char *GROUP_ID = "";
 
 static SessionAttribute g_sessionAttr = {
     .dataType = SessionType::TYPE_BYTES
@@ -56,7 +56,6 @@ int CommunicatorSoftbusAdapter::Init(std::shared_ptr<SoftBusListener> &networkLi
     {
         std::unique_lock<std::mutex> sessionLock(operationMutex_);
         networkListener_ = networkListener;
-    
     }
     return SUCCESS;
 }
@@ -111,7 +110,7 @@ uint32_t CommunicatorSoftbusAdapter::Destroy()
 }
 
 uint32_t CommunicatorSoftbusAdapter::SendMsg(const std::string &networkId, const uint8_t *data,
-        uint32_t dataSize, int32_t type)
+    uint32_t dataSize, int32_t type)
 {
     int32_t ret = SUCCESS;
     int32_t sessionId = 0;

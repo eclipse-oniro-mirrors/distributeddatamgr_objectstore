@@ -162,7 +162,6 @@ protected:
         }
     }
 
-
     void ReadValue(const uint8_t *data, uint32_t dataSize, uint32_t &cursor, std::string &value) const
     {
         if (dataSize <= cursor) {

@@ -111,7 +111,6 @@ uint32_t NetworkManager::InitLocalDeviceId()
         return ERR_NETWORK;
     }
     local_ = info.networkId;
-    LOG_ERROR("hanlu uuid %s", local_.c_str());
     return SUCCESS;
 }
 

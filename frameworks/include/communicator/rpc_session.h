@@ -31,7 +31,8 @@ public:
 
 private:
     ssize_t Recv(void *buf, ssize_t len, int timeout) override;
-    const std::string &GetSessionId() const override {
+    const std::string &GetSessionId() const override
+    {
         return networkId_;
     }
     std::string networkId_ {};

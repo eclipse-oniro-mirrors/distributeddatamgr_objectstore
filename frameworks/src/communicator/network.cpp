@@ -28,7 +28,7 @@ constexpr static uint32_t SHANKE_RETRY_LIMIT = 3;       // 3: retry times
 constexpr static uint32_t SHANKE_HANDE_WAIT_TIME = 10;  // 10: wait 10 milliseconds
 static constexpr int32_t ID_BUF_LEN = 65;
 
-static const char *SESSION_NAME = "objectstore";
+static constexpr const char *SESSION_NAME = "objectstore";
 };                                                      // namespace
 Network::Network(const std::string &name, const device_t &local, NetworkObserver *observer)
     : networkName_(name), observer_(observer)
@@ -70,9 +70,6 @@ uint32_t Network::InitLocalNetworkID()
         return ERR_NETWORK;
     }
     local_.networkId = info.networkId;
-   // std::string uuid = GetUuidByNodeId(std::string(info.networkId));
-    LOG_INFO("[LocalDevice] networkid:%s,name:%s, type:%d",
-        info.networkId, info.deviceName, info.deviceTypeId);
     return SUCCESS;
 }
 
@@ -204,7 +201,8 @@ DataBuffer *Network::GetSessionDataBuffer()
     return dataBuffer;
 }
 
-bool Network::ReadMessageFromSession(std::shared_ptr<CommunicatorSession> &session, std::vector<std::shared_ptr<Message>> &messages)
+bool Network::ReadMessageFromSession(std::shared_ptr<CommunicatorSession> &session,
+    std::vector<std::shared_ptr<Message>> &messages)
 {
     DataBuffer *dataBuffer = GetSessionDataBuffer();
     if (dataBuffer == nullptr) {
@@ -227,7 +225,7 @@ bool Network::ReadMessageFromSession(std::shared_ptr<CommunicatorSession> &sessi
         MessageHeader *msgHeader = reinterpret_cast<MessageHeader *>(buffer.get() + cursor);
         if (msgHeader->dataSize < sizeof(MessageHeader) || msgHeader->dataSize > MAX_SIZE_ONCE) {
             cursor = usedSize;
-            LOG_ERROR("Network-%s: CommunicatorSession received illegal message, dataSize = %d, version is %u", __func__,
+            LOG_ERROR("Network-%s: received illegal message, dataSize = %d, version is %u", __func__,
                       msgHeader->dataSize, msgHeader->version);
             break;
         }
@@ -248,20 +246,11 @@ bool Network::ReadMessageFromSession(std::shared_ptr<CommunicatorSession> &sessi
 
 uint32_t Network::AddRemoteStoreIds(const std::string &remoteId)
 {
-    /* if (!remoteIds_.insert(remoteId).second) {
-        LOG_INFO("Network-%s: remoteId has been open", __func__);
-    }
-    UpdateNetworkId(remoteId); */
     return SUCCESS;
 }
 
 uint32_t Network::RemoveRemoteStoreIds(const std::string &remoteId)
 {
-    /* if (remoteIds_.empty()) {
-        LOG_INFO("Network-%s: single device", __func__);
-        return SUCCESS;
-    }
-    remoteIds_.erase(remoteId); */
     return SUCCESS;
 }
 

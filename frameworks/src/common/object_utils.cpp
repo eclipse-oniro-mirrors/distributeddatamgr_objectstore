@@ -25,7 +25,7 @@ const std::string SEPARATOR = "/";
 }  // namespace
 
 std::string ObjectUtils::GenObjectIdPrefix(const std::string &host, const std::string &user, const std::string &bundle,
-                                            const std::string &store)
+    const std::string &store)
 {
     std::stringstream stream;
     stream << OBJECT_ID_SCHEMA << host << SEPARATOR << user << SEPARATOR << bundle << SEPARATOR << store;

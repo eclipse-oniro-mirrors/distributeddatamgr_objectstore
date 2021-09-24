@@ -73,7 +73,6 @@ uint32_t OperationDispatcher::Publish(DataType type, const Bytes &key, const std
 
 uint32_t OperationDispatcher::PublishDelete(DataType type, const Bytes &key)
 {
-    LOG_ERROR("OperationDispatcher-%s: hanlu start", __func__);
     std::shared_lock<std::shared_mutex> lock(executorMutex_);
     auto ite = executorMap_.find(type);
     if (ite == executorMap_.end()) {
@@ -87,7 +86,6 @@ uint32_t OperationDispatcher::PublishDelete(DataType type, const Bytes &key)
             return ret;
         }
     }
-    LOG_ERROR("OperationDispatcher-%s: hanlu end", __func__);
     return SUCCESS;
 }
 

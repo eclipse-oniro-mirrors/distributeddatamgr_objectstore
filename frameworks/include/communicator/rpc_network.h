@@ -59,7 +59,7 @@ private:
     std::shared_ptr<SoftBusListener> networkListener_ { nullptr };
 };
 
-class SoftBusListener /*: public OHOS::DistributedKv::KvStoreDeathRecipient */{
+class SoftBusListener {
 public:
 
     INodeStateCb *GetNodeStateCallback() const;
@@ -67,7 +67,7 @@ public:
     uint32_t Register();
     void UnRegister();
     explicit SoftBusListener(RPCNetwork *rpcNetwork);
-    virtual ~SoftBusListener() ;
+    virtual ~SoftBusListener();
     static void OnNodeOnline(NodeBasicInfo *info);
     static void OnNodeOffline(NodeBasicInfo *info);
     static int OnSessionOpened(int sessionId, int result);

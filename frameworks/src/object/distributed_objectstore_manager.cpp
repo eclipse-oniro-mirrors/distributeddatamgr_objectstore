@@ -35,5 +35,4 @@ DistributedObjectStoreManager* DistributedObjectStoreManager::GetInstance()
     }
     return instPtr;
 }
-
 }

@@ -22,7 +22,6 @@
 #include "distributed_object.h"
 
 namespace OHOS::ObjectStore {
-
 class DistributedObjectStore {
 public:
     virtual ~DistributedObjectStore() {};

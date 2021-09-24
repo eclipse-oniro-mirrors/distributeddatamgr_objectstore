@@ -97,30 +97,4 @@ static_library("objectstore_sdk") {
          "//foundation/distributeddatamgr/objectstore:objectstoremgr",
     ]
 }
-
-executable("test_objectstore_local") {
-    sources = [
-        "test/src/objectstore_local_oper_unit_test.cpp",
-    ]
-
-    include_dirs = [
-        "//third_party/bounds_checking_function/include",
-        "//foundation/communication/dsoftbus/interfaces/kits/bus_center",
-        "//foundation/communication/dsoftbus/interfaces/kits/transport",
-        "//foundation/communication/dsoftbus/interfaces/kits/common",
-        "frameworks/include/coordinator/include",
-        "frameworks/include/common/",
-        "interfaces/innerkits",
-    ]
-    configs -= [ "//build/lite/config:language_c" ]
-    configs -= [ "//build/lite/config:language_cpp" ]
-    cflags_cc = [
-      "-std=c++17"
-    ]
-    public_deps = [
-      "//foundation/distributedschedule/samgr_lite/samgr:samgr",
-      "//third_party/bounds_checking_function:libsec_shared",
-      "//foundation/distributeddatamgr/objectstore:objectstore_sdk"
-    ]
-}
 #}
