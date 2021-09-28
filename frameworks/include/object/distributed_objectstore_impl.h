@@ -35,7 +35,7 @@ public:
     void Close() override;
 
 private:
-    DistributedObjectImpl* CacheObject(FlatObject *flatObject);
+    DistributedObjectImpl *CacheObject(FlatObject *flatObject);
     FlatObjectStore *flatObjectStore_ = nullptr;
     std::shared_mutex dataMutex_ {};
     std::vector<DistributedObjectImpl*> objects_ {};

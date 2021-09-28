@@ -22,6 +22,8 @@ namespace OHOS::ObjectStore {
 namespace {
 const std::string OBJECT_ID_SCHEMA = "dataobject://";
 const std::string SEPARATOR = "/";
+const int OBJECT_INDEX_STORE = 3;
+const int OBJECT_INDEX_FIELDS = 4;
 }  // namespace
 
 std::string ObjectUtils::GenObjectIdPrefix(const std::string &host, const std::string &user, const std::string &bundle,
@@ -51,9 +53,9 @@ std::string ObjectUtils::GetObjectStoreName(const std::string &objectId)
 
     std::vector<std::string> items;
     StringUtils::Split(objectId.substr(index), SEPARATOR, items);
-    if (items.size() < 4) {
+    if (items.size() < OBJECT_INDEX_FIELDS) {
         return "";
     }
-    return items[3];
+    return items[OBJECT_INDEX_STORE];
 }
 }  // namespace OHOS::ObjectStore

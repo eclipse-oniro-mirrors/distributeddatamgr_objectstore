@@ -39,9 +39,9 @@ namespace {
     }
 }  // namespace
 
-DistributedObjectImpl* DistributedObjectStoreImpl::CacheObject(FlatObject *flatObject)
+DistributedObjectImpl *DistributedObjectStoreImpl::CacheObject(FlatObject *flatObject)
 {
-    DistributedObjectImpl* object = new (std::nothrow) DistributedObjectImpl(flatObject);
+    DistributedObjectImpl *object = new (std::nothrow) DistributedObjectImpl(flatObject);
     if (object == nullptr) {
         return nullptr;
     }
@@ -101,7 +101,7 @@ void DistributedObjectStoreImpl::Close()
 {
     {
         std::unique_lock<std::shared_mutex> cacheLock(dataMutex_);
-        for (DistributedObjectImpl* item:objects_) {
+        for (auto &item : objects_) {
             flatObjectStore_->Delete(item->GetObject()->GetId());
             delete item;
         }

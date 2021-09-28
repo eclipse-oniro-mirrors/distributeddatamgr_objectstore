@@ -94,7 +94,7 @@ public:
             return false;
         }
         value = static_cast<uint64_t>(result);
-        return result == value;
+        return (result == value);
     }
 
     static bool StrToInt32(const std::string &str, int32_t &value)
@@ -110,7 +110,7 @@ public:
             return false;
         }
         value = static_cast<int32_t>(result);
-        return result == value;
+        return (result == value);
     }
 
     static bool StrToUint32(const std::string &str, uint32_t &value)
@@ -126,10 +126,7 @@ public:
             return false;
         }
         value = static_cast<uint32_t>(result);
-        if (result != value) {
-            return false;
-        }
-        return result == value;
+        return (result == value);
     }
     
     static std::vector<uint8_t> StrToBytes(const std::string &src)

@@ -19,7 +19,7 @@
 #include "distributed_objectstore_manager_impl.h"
 
 namespace OHOS::ObjectStore {
-DistributedObjectStoreManager* DistributedObjectStoreManager::GetInstance()
+DistributedObjectStoreManager *DistributedObjectStoreManager::GetInstance()
 {
     static char instMemory[sizeof(DistributedObjectStoreManagerImpl)];
     static std::mutex instLock_;

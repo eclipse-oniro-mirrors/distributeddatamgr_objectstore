@@ -43,7 +43,7 @@ DistributedObjectStore *DistributedObjectStoreManagerImpl::Create(const std::str
         return nullptr;
     }
     LOG_INFO("start create %s %s", bundleName.c_str(), sessionId.c_str());
-    FlatObjectStore* flatObjectStore = new (std::nothrow) FlatObjectStore(bundleName, sessionId);
+    FlatObjectStore *flatObjectStore = new (std::nothrow) FlatObjectStore(bundleName, sessionId);
     if (flatObjectStore == nullptr) {
         LOG_ERROR("no memory for FlatObjectStore malloc!");
         return nullptr;

@@ -35,7 +35,7 @@ FlatObjectStore::FlatObjectStore(const std::string &bundleName,
     : bundleName_(bundleName), storeName_(storeName), prefix_(""),
       watcherHolder_(std::make_unique<WatcherHolder>())
 {
-    storageEngine_ = std::make_shared<FlatObjectStorageEngine>("");
+    storageEngine_ = std::make_shared<FlatObjectStorageEngine>();
 }
 
 FlatObjectStore::~FlatObjectStore()

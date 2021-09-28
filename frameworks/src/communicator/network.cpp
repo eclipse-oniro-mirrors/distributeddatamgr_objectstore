@@ -169,7 +169,7 @@ void Network::NotifyObservers(const NetworkNode &neighbor) const
     }
 }
 
-void Network::HandleSessionConnected(const std::string& deviceId)
+void Network::HandleSessionConnected(const std::string &deviceId)
 {
     NetworkNode neighbor;
     neighbor.deviceId = deviceId;
@@ -178,7 +178,7 @@ void Network::HandleSessionConnected(const std::string& deviceId)
     UpdateNeighborStatus(neighbor);
 }
 
-void Network::HandleSessionDisConnected(const std::string& deviceId)
+void Network::HandleSessionDisConnected(const std::string &deviceId)
 {
     NetworkNode neighbor;
     neighbor.deviceId = deviceId;

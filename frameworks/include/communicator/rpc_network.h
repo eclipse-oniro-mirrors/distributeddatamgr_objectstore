@@ -39,9 +39,9 @@ public:
     // there is sessionid same as deviceId
     RPCNetwork(const std::string &name, const device_t &local, NetworkObserver *observer);
     ~RPCNetwork() override;
-    int32_t OnSessionOpened(const std::string& deviceId);
-    void OnSessionClosed(const std::string& deviceId);
-    void OnMessageReceived(const std::string& deviceId, const char *data, uint32_t len);
+    int32_t OnSessionOpened(const std::string &deviceId);
+    void OnSessionClosed(const std::string &deviceId);
+    void OnMessageReceived(const std::string &deviceId, const char *data, uint32_t len);
     void OnRemoteDied();
     uint32_t Init() override;
     void Destory() override;
@@ -52,7 +52,7 @@ public:
     std::string GetDeviceIdBySession(int session);
 private:
     uint32_t WriteMessageToSession(const std::string &networkId, std::shared_ptr<Message> &message);
-    SessionInfo* GetSessionFromCache(const std::string& networkId);
+    SessionInfo *GetSessionFromCache(const std::string &networkId);
     std::map<const std::string, SessionInfo> sessionCache_; // session in info
     std::shared_mutex sessionCacheMutex_ {};
     std::shared_mutex openSessionMutex_ {};
