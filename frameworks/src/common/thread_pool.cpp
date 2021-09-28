@@ -19,7 +19,7 @@
 #include <memory>
 
 namespace OHOS::ObjectStore {
-ThreadPool::ThreadPool(const std::string& name)
+ThreadPool::ThreadPool(const std::string &name)
     : myName_(name), maxTaskNum_(0), running_(false)
 {
 }
@@ -57,7 +57,7 @@ void ThreadPool::Stop()
         hasTaskToDo_.notify_all();
     }
 
-    for (auto& e : threads_) {
+    for (auto &e : threads_) {
         e.join();
     }
 }

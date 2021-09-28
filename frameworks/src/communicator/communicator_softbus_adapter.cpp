@@ -24,6 +24,7 @@
 namespace OHOS::ObjectStore {
 static constexpr const char *SESSION_NAME = "objectstore";
 static constexpr const char *GROUP_ID = "";
+static const int DEVICE_ID_LEN = 256;
 
 static SessionAttribute g_sessionAttr = {
     .dataType = SessionType::TYPE_BYTES
@@ -31,8 +32,8 @@ static SessionAttribute g_sessionAttr = {
 
 uint32_t CommunicatorSoftbusAdapter::GetDeviceIdBySession(int sessionId, std::string &deviceId)
 {
-    char devId[256] = {0};
-    int errCode = ::GetPeerDeviceId(sessionId, devId, 256);
+    char devId[DEVICE_ID_LEN] = {0};
+    int errCode = ::GetPeerDeviceId(sessionId, devId, DEVICE_ID_LEN);
     if (errCode != 0) {
         return ERR_OPENSESSION;
     }
@@ -64,7 +65,7 @@ uint32_t CommunicatorSoftbusAdapter::OpenSoftbusLink(const std::string &networkN
 {
     {
         std::unique_lock<std::mutex> sessionLock(operationMutex_);
-        if (0 != sessionDevDic_.count(networkId)) {
+        if (sessionDevDic_.count(networkId) != 0) {
             if (networkListener_ != nullptr && networkListener_->GetSessionListener() != nullptr
                 && networkListener_->GetSessionListener()->OnSessionOpened != nullptr) {
                 networkListener_->GetSessionListener()->OnSessionOpened(sessionDevDic_[networkId], SUCCESS);
@@ -116,7 +117,7 @@ uint32_t CommunicatorSoftbusAdapter::SendMsg(const std::string &networkId, const
     int32_t sessionId = 0;
     {
         std::unique_lock<std::mutex> sessionLock(operationMutex_);
-        if (0 == sessionDevDic_.count(networkId)) {
+        if (sessionDevDic_.count(networkId) == 0) {
             LOG_INFO("network id not exit %s", networkId.c_str());
             return SUCCESS;
         }

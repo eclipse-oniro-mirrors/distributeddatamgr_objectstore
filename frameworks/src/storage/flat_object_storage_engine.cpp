@@ -83,7 +83,7 @@ uint32_t FlatObjectStorageEngine::PutHash(const Key &key, const std::map<Field, 
     std::map<Field, Value> result;
     if (hashDic_->count(key) != 0) {
         result = hashDic_->at(key);
-        for(auto &item : fieldValues) {
+        for (auto &item : fieldValues) {
             result.insert_or_assign(item.first, item.second);
         }
     } else {
@@ -111,7 +111,8 @@ uint32_t FlatObjectStorageEngine::DeleteKey(const Key &key)
         return ERR_DB_NOT_INIT;
     }
     std::unique_lock<std::shared_mutex> lock(operationMutex_);
-    for(auto it = hashDic_->begin(); it != hashDic_->end(); ) {
+    auto it = hashDic_->begin();
+    while (it != hashDic_->end()) {
         if (it->first == key) {
             it = hashDic_->erase(it);
         } else {

@@ -276,20 +276,10 @@ void RemoteObservers::HandleAddObserverRequest(const std::shared_ptr<Message> &m
     ObserverMode mode = static_cast<ObserverMode>(request->mode);
     device_t deviceId;
     request->GetSource(deviceId);
-    auto ret = AddObserver(key, deviceId, mode);
-    if (ret != SUCCESS) {
-        auto response =
-            std::make_shared<ObserveResponse>(idGenerator_++, request->GetId(), ret, std::vector<uint8_t>());
-        SendMessage(deviceId, response);
-        return;
-    }
     std::vector<uint8_t> operationData;
-    ret = GetObserverObject(key, operationData);
-    if (ret != SUCCESS) {
-        auto response =
-            std::make_shared<ObserveResponse>(idGenerator_++, request->GetId(), ret, std::vector<uint8_t>());
-        SendMessage(deviceId, response);
-        return;
+    auto ret = AddObserver(key, deviceId, mode);
+    if (ret == SUCCESS) {
+        ret = GetObserverObject(key, operationData);
     }
     auto response = std::make_shared<ObserveResponse>(idGenerator_++, request->GetId(), ret, std::move(operationData));
     SendMessage(deviceId, response);

@@ -26,8 +26,6 @@
 namespace OHOS::ObjectStore {
 class FlatObjectStorageEngine : public StorageEngine {
 public:
-
-    explicit FlatObjectStorageEngine(const std::string &persistFile) {};
     FlatObjectStorageEngine() = default;
     ~FlatObjectStorageEngine() override;
 

@@ -78,8 +78,8 @@ protected:
     bool ReadMessageFromSession(std::shared_ptr<CommunicatorSession> &session,
         std::vector<std::shared_ptr<Message>> &messages);
     DataBuffer *GetSessionDataBuffer();
-    void HandleSessionConnected(const std::string& deviceId);
-    void HandleSessionDisConnected(const std::string& deviceId);
+    void HandleSessionConnected(const std::string &deviceId);
+    void HandleSessionDisConnected(const std::string &deviceId);
     void HandleHandShakeResponse(std::shared_ptr<CommunicatorSession> &session, std::shared_ptr<Message> message);
     void UpdateNeighborStatus(const NetworkNode &neighbor);
     void NotifyObservers(const NetworkNode &neighbor) const;

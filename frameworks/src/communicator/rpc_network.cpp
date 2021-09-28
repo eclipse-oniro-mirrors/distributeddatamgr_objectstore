@@ -22,7 +22,7 @@
 
 namespace OHOS::ObjectStore {
 namespace {
-    constexpr uint32_t OPEN_SESSION_TIMEOUT = 20000;
+constexpr uint32_t OPEN_SESSION_TIMEOUT = 20000;
 } 
 
 RPCNetwork::RPCNetwork(const std::string &name, const device_t &local, NetworkObserver *observer)
@@ -56,11 +56,11 @@ void RPCNetwork::Destory()
     LOG_INFO("RPCNetwork-%s: Succeed to unregister and destory", __func__);
 }
 
-int32_t RPCNetwork::OpenSession(const std::string& networkId)
+int32_t RPCNetwork::OpenSession(const std::string &networkId)
 {
     LOG_INFO("RPCNetwork-%s, start Open session,%s", __func__, networkId.c_str());
     std::unique_lock<std::shared_mutex> cacheLock(openSessionMutex_);
-    SessionInfo* session;
+    SessionInfo *session = nullptr;
     {
         std::unique_lock<std::shared_mutex> cacheLock(sessionCacheMutex_);
         session = GetSessionFromCache(networkId);
@@ -96,7 +96,7 @@ void RPCNetwork::OnRemoteDied()
     LOG_ERROR("RPCNetwork-%s: kv service died, clear all session", __func__);
 }
 
-SessionInfo* RPCNetwork::GetSessionFromCache(const std::string& networkId)
+SessionInfo *RPCNetwork::GetSessionFromCache(const std::string &networkId)
 {
     auto ite = sessionCache_.find(networkId);
     if (ite != sessionCache_.end()) {
@@ -114,9 +114,9 @@ void RPCNetwork::CloseSession(const std::string &networkId)
     }
 }
 
-int32_t RPCNetwork::OnSessionOpened(const std::string& deviceId)
+int32_t RPCNetwork::OnSessionOpened(const std::string &deviceId)
 {
-    SessionInfo* sessionInfo = nullptr;
+    SessionInfo *sessionInfo = nullptr;
     {
         std::unique_lock<std::shared_mutex> lock(sessionCacheMutex_);
         sessionInfo = &sessionCache_[deviceId];
@@ -131,9 +131,9 @@ int32_t RPCNetwork::OnSessionOpened(const std::string& deviceId)
     return 0;
 }
 
-void RPCNetwork::OnSessionClosed(const std::string& deviceId)
+void RPCNetwork::OnSessionClosed(const std::string &deviceId)
 {
-    SessionInfo* sessionInfo;
+    SessionInfo *sessionInfo;
     {
         std::unique_lock<std::shared_mutex> lock(sessionCacheMutex_);
         sessionInfo = &sessionCache_[deviceId];
@@ -146,7 +146,7 @@ void RPCNetwork::OnSessionClosed(const std::string& deviceId)
     return;
 }
 
-void RPCNetwork::OnMessageReceived(const std::string& deviceId, const char *data, uint32_t len)
+void RPCNetwork::OnMessageReceived(const std::string &deviceId, const char *data, uint32_t len)
 {
     std::shared_ptr<CommunicatorSession> session = std::make_shared<RPCSession>(const_cast<char *>(data), len);
     if (session == nullptr) {

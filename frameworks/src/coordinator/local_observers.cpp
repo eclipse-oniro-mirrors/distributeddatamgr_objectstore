@@ -291,7 +291,7 @@ void LocalObservers::ReSubRemoteObjects()
     std::unique_lock<std::mutex> lock(observerMutex_);
     {
         std::unique_lock<std::mutex> lock(remoteObserveMutex_);
-        for (auto observer:observerMap_) {
+        for (auto observer : observerMap_) {
             if (!IsLocalObject(observer.first)) {
                 remoteObserveQueue_.emplace(observer.first, ObserveCmd::ADD_OBSERVER,
                     ObserverMode::OBSERVER_DEFAULT_MODE);
