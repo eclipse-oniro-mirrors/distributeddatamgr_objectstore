@@ -12,7 +12,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- 
 #ifndef OBJECT_OBSERVER_H
 #define OBJECT_OBSERVER_H
 

@@ -79,7 +79,8 @@ void PutNum(int32_t offset, void* val, int32_t valLen, Bytes &data)
     }
 
     for (int i = 0; i < valLen; i++) {
-        data[offset + i] = *(static_cast<uint64_t *>(val)) >> (valLen - i - 1) * 8;
+        // 8 bit = 1 byte
+        data[offset + i] = *(static_cast<uint64_t *>(val)) >> ((valLen - i - 1) * 8);
     }
     return;
 }

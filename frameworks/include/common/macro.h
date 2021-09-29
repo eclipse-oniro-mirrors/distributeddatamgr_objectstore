@@ -22,6 +22,5 @@ namespace OHOS::ObjectStore {
     ClassName(ClassName &&) = delete; \
     ClassName& operator=(const ClassName &) = delete; \
     ClassName& operator=(ClassName &&) = delete
-#define ULL(x) (static_cast<unsigned long long>(x))
 }
 #endif // MACRO_H

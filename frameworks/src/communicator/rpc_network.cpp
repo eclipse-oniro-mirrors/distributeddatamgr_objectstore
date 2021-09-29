@@ -23,7 +23,7 @@
 namespace OHOS::ObjectStore {
 namespace {
 constexpr uint32_t OPEN_SESSION_TIMEOUT = 20000;
-} 
+}
 
 RPCNetwork::RPCNetwork(const std::string &name, const device_t &local, NetworkObserver *observer)
     : Network(name, local, observer)
@@ -277,7 +277,7 @@ uint32_t SoftBusListener::Register()
     if (nodeStateCallback_ == nullptr) {
         return ERR_NOMEM;
     }
-    
+
     sessionListener_ = new (std::nothrow) ISessionListener;
     if (sessionListener_ == nullptr) {
         return ERR_NOMEM;

@@ -81,54 +81,6 @@ public:
         return stream.str();
     }
 
-    static bool StrToUint64(const std::string &str, uint64_t &value)
-    {
-        if (str.empty() || (str.front() == '-')) {
-            return false;
-        }
-        char *end = nullptr;
-        errno = 0;
-        auto addr = str.c_str();
-        auto result = strtoull(addr, &end, 10);  // 10 means decimalism
-        if ((end == nullptr) || (end == addr) || (end[0] != '\0') || (errno == ERANGE)) {
-            return false;
-        }
-        value = static_cast<uint64_t>(result);
-        return (result == value);
-    }
-
-    static bool StrToInt32(const std::string &str, int32_t &value)
-    {
-        if (str.empty()) {
-            return false;
-        }
-        char *end = nullptr;
-        errno = 0;
-        auto addr = str.c_str();
-        auto result = strtol(addr, &end, 10);  // 10 means decimalism
-        if ((end == nullptr) || (end == addr) || (end[0] != '\0') || (errno == ERANGE)) {
-            return false;
-        }
-        value = static_cast<int32_t>(result);
-        return (result == value);
-    }
-
-    static bool StrToUint32(const std::string &str, uint32_t &value)
-    {
-        if (str.empty() || (str.front() == '-')) {
-            return false;
-        }
-        char *end = nullptr;
-        errno = 0;
-        auto addr = str.c_str();
-        auto result = strtoul(addr, &end, 10);  // 10 means decimalism
-        if ((end == nullptr) || (end == addr) || (end[0] != '\0') || (errno == ERANGE)) {
-            return false;
-        }
-        value = static_cast<uint32_t>(result);
-        return (result == value);
-    }
-    
     static std::vector<uint8_t> StrToBytes(const std::string &src)
     {
         std::vector<uint8_t> dst;
