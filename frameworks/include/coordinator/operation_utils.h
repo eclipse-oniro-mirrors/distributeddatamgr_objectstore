@@ -12,7 +12,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- 
 #ifndef OPERATION_UTILS_H
 #define OPERATION_UTILS_H
 
