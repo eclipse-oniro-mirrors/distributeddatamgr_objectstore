@@ -256,23 +256,21 @@ uint32_t Network::RemoveRemoteStoreIds(const std::string &remoteId)
 
 uint32_t Network::GetRemoteStoreIds(std::vector<std::string> &remoteId)
 {
-    if (remoteIds_.empty()) {
-        NodeBasicInfo *info = nullptr;
-        int32_t size;
-        GetAllNodeDeviceInfo(PKG_NAME, &info, &size);
+    NodeBasicInfo *info = nullptr;
+    int32_t size;
+    remoteId.clear();
+    GetAllNodeDeviceInfo(PKG_NAME, &info, &size);
 
-        if (size == 0 || info == nullptr) {
-            LOG_INFO("Network-%s: single device", __func__);
-            return SUCCESS;
-        }
-
-        uint32_t i;
-        for (i = 0; i < size; i++) {
-            LOG_INFO("Network-%s: device %s", __func__, info[i].networkId);
-            remoteIds_.insert(info[i].networkId);
-        }
+    if (size == 0 || info == nullptr) {
+        LOG_INFO("Network-%s: single device", __func__);
+        return SUCCESS;
     }
-    remoteId.assign(remoteIds_.begin(), remoteIds_.end());
+
+    uint32_t i;
+    for (i = 0; i < size; i++) {
+        LOG_INFO("Network-%s: device %s", __func__, info[i].networkId);
+        remoteId.insert(remoteId.end(), info[i].networkId);
+    }
     return SUCCESS;
 }
 }  // namespace OHOS::ObjectStore
