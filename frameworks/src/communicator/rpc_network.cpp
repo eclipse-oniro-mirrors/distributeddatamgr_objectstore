@@ -70,9 +70,9 @@ int32_t RPCNetwork::OpenSession(const std::string &networkId)
         session = &sessionCache_[networkId];
     }
     std::unique_lock<std::mutex> sessionLock(session->sessionMutex);
-    session->connectStatus_ = DISCONNECT;
+    session->connectStatus_ = CONNECTING;
     session->waitCount++;
-    dataManager_.OpenSoftbusLink(networkName_, networkId);
+    dataManager_.OpenSoftbusLink(networkId);
     if (session->connectStatus_ == CONNCET) {
         session->waitCount--;
         return 0;
@@ -121,7 +121,7 @@ int32_t RPCNetwork::OnSessionOpened(const std::string &deviceId)
         std::unique_lock<std::shared_mutex> lock(sessionCacheMutex_);
         sessionInfo = &sessionCache_[deviceId];
     }
-    {
+    if (sessionInfo->connectStatus_ == CONNECTING) {
         std::unique_lock<std::mutex> sessionLock(sessionInfo->sessionMutex);
         sessionInfo->connectStatus_ = CONNCET;
         sessionInfo->CV.notify_one();

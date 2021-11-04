@@ -91,7 +91,6 @@ protected:
     NetworkObserver *observer_ { nullptr };
     ThreadPool threadPool_ { "objectnetwork" };
     CommunicatorSoftbusAdapter dataManager_;
-    std::set<std::string> remoteIds_;
 };
 }  // namespace OHOS::ObjectStore
 #endif
