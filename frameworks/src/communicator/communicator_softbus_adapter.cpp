@@ -121,7 +121,7 @@ uint32_t CommunicatorSoftbusAdapter::SendMsg(const std::string &networkId, const
             LOG_INFO("network id not exit, %s", networkId.c_str());
             return ERR_NETWORK;
         }
-        sessionId = sessionDevDic_[networkId];    
+        sessionId = sessionDevDic_[networkId];
     }
     LOG_INFO("start sendMsg %d", dataSize);
     if (type == TYPE_SEND_BYTE) {
