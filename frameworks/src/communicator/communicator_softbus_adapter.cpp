@@ -61,7 +61,7 @@ int CommunicatorSoftbusAdapter::Init(std::shared_ptr<SoftBusListener> &networkLi
     return SUCCESS;
 }
 
-uint32_t CommunicatorSoftbusAdapter::OpenSoftbusLink(const std::string &networkName, const std::string &networkId)
+uint32_t CommunicatorSoftbusAdapter::OpenSoftbusLink(const std::string &networkId)
 {
     {
         std::unique_lock<std::mutex> sessionLock(operationMutex_);
@@ -118,10 +118,10 @@ uint32_t CommunicatorSoftbusAdapter::SendMsg(const std::string &networkId, const
     {
         std::unique_lock<std::mutex> sessionLock(operationMutex_);
         if (sessionDevDic_.count(networkId) == 0) {
-            LOG_INFO("network id not exit %s", networkId.c_str());
-            return SUCCESS;
+            LOG_INFO("network id not exit, %s", networkId.c_str());
+            return ERR_NETWORK;
         }
-        sessionId = sessionDevDic_[networkId];
+        sessionId = sessionDevDic_[networkId];    
     }
     LOG_INFO("start sendMsg %d", dataSize);
     if (type == TYPE_SEND_BYTE) {
@@ -131,6 +131,7 @@ uint32_t CommunicatorSoftbusAdapter::SendMsg(const std::string &networkId, const
         ret = SendMessage(sessionId, data, dataSize);
     }
     if (ret != 0) {
+        LOG_INFO("send fail %d", ret);
         return ERR_NETWORK;
     }
     LOG_INFO("sendMsg success");

@@ -22,6 +22,8 @@
 namespace OHOS::ObjectStore {
 enum DeviceStatus {
     DISCONNECT,
+    CONNECTING,
+    CONNECT_FAIL,
     CONNCET
 };
 
