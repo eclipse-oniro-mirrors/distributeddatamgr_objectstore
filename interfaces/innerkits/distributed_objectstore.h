@@ -28,7 +28,9 @@ public:
     virtual DistributedObject *CreateObject(const std::string &classPath, const std::string &key) = 0;
 
     virtual uint32_t Sync(DistributedObject *object) = 0;
-
+    virtual uint32_t Delete(DistributedObject *object) = 0;
+    virtual uint32_t Watch(DistributedObject *object, std::shared_ptr<ObjectWatcher> objectWatcher) = 0;
+    virtual uint32_t UnWatch(DistributedObject *object) = 0;
     virtual void Close() = 0;
 };
 }

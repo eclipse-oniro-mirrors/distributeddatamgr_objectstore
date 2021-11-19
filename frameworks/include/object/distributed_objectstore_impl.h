@@ -29,16 +29,26 @@ public:
     ~DistributedObjectStoreImpl() override;
 
     DistributedObject *CreateObject(const std::string &classPath, const std::string &objectId) override;
-
     uint32_t Sync(DistributedObject *object) override;
-
+    uint32_t Delete(DistributedObject *object) override;
+    uint32_t Watch(DistributedObject *object, std::shared_ptr<ObjectWatcher> watcher) override;
+    uint32_t UnWatch(DistributedObject *object) override;
     void Close() override;
 
 private:
-    DistributedObjectImpl *CacheObject(FlatObject *flatObject);
+    DistributedObjectImpl *CacheObject(FlatObject *flatObject, FlatObjectStore *flatObjectStore);
     FlatObjectStore *flatObjectStore_ = nullptr;
+    std::map<DistributedObject *, std::shared_ptr<FlatObjectWatcher>> watchers_;
     std::shared_mutex dataMutex_ {};
     std::vector<DistributedObjectImpl*> objects_ {};
+};
+class WatcherProxy : public FlatObjectWatcher {
+public:
+    WatcherProxy(const std::shared_ptr<ObjectWatcher> objectWatcher);
+    void OnChanged(const Bytes &id) override;
+    void OnDeleted(const Bytes &id) override;
+private:
+    std::shared_ptr<ObjectWatcher> objectWatcher_;
 };
 }
 

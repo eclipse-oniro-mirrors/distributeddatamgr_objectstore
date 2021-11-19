@@ -59,6 +59,8 @@ constexpr uint32_t ERR_PUT_LIST = BASE_ERR_OFFSET + 33;      // Put list data fa
 constexpr uint32_t ERR_GET_LIST = BASE_ERR_OFFSET + 34;      // Get list data failed
 constexpr uint32_t ERR_EXIST = BASE_ERR_OFFSET + 35;         // Already exist
 constexpr uint32_t ERR_NOTOPENED = BASE_ERR_OFFSET + 36;     // Invalid argument
+constexpr uint32_t ERR_NOT_EXIST = BASE_ERR_OFFSET + 37;     // not exist
+constexpr uint32_t ERR_ID_EXIST = BASE_ERR_OFFSET + 38;     // objectId not exist
 }  // namespace OHOS::ObjectStore
 
 #endif

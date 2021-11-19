@@ -14,6 +14,7 @@
  */
 
 #include "flat_object.h"
+#include "objectstore_errors.h"
 
 namespace OHOS::ObjectStore {
 const Bytes &FlatObject::GetId() const
@@ -29,6 +30,15 @@ void FlatObject::SetId(const Bytes &id)
 const std::map<Bytes, Bytes> &FlatObject::GetFields() const
 {
     return fields_;
+}
+
+const uint32_t &FlatObject::GetField(Bytes &key, Bytes &value) const
+{
+    if (fields_.count(key) == 0) {
+        return ERR_INVAL;
+    }
+    value = fields_.at(key);
+    return SUCCESS;
 }
 
 void FlatObject::SetField(const Bytes &field, const Bytes &value)
