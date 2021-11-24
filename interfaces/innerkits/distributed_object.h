@@ -20,7 +20,6 @@
 #include <memory>
 
 namespace OHOS::ObjectStore {
-
 class DistributedObject {
 public:
     virtual ~DistributedObject() {};

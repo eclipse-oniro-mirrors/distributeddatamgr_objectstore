@@ -15,12 +15,12 @@
 
 #include <type_traits>
 
-#include "distributed_object_impl.h"
 #include "objectstore_errors.h"
 #include "string_utils.h"
 #include "bytes.h"
 #include "logger.h"
 #include "securec.h"
+#include "distributed_object_impl.h"
 
 namespace OHOS::ObjectStore {
 DistributedObjectImpl::~DistributedObjectImpl()
@@ -29,15 +29,15 @@ DistributedObjectImpl::~DistributedObjectImpl()
 }
 
 namespace {
-    static int32_t stringVal = 0;     // string
-    static int32_t integerVal = 1;    // integer
-    static int32_t booleanVal = 2;    // boolean
-    static int32_t shortVal = 3;      // short
-    static int32_t longVal = 4;       // long
-    static int32_t floatVal = 5;      // float
-    static int32_t doubleVal = 6;     // double
-    static int32_t characterVal = 7;  // character
-    static int32_t byteVal = 8;  // character
+static int32_t stringVal = 0;     // string
+static int32_t integerVal = 1;    // integer
+static int32_t booleanVal = 2;    // boolean
+static int32_t shortVal = 3;      // short
+static int32_t longVal = 4;       // long
+static int32_t floatVal = 5;      // float
+static int32_t doubleVal = 6;     // double
+static int32_t characterVal = 7;  // character
+static int32_t byteVal = 8;  // character
 
 inline bool IsBigEndian()
 {
@@ -89,7 +89,8 @@ uint32_t GetNum(Bytes &data, int32_t offset, void* val, int32_t valLen)
 {
     uint8_t *value = (uint8_t *)val;
     if (data.size() != offset + valLen) {
-        LOG_ERROR("DistributedObjectImpl:GetNum data.size() %d, offset %d, valLen %d",data.size(), offset, valLen);
+        LOG_ERROR("DistributedObjectImpl:GetNum data.size() %d, offset %d, valLen %d",
+                data.size(), offset, valLen);
         return ERR_RANGE_LIST;
     }
     for (int i = 0; i < valLen; i++) {
@@ -105,7 +106,6 @@ void TransBytes(void* input, int32_t inputLen, int32_t flag, Bytes &data)
     PutNum(sizeof(int32_t), input, inputLen, data);
     return;
 }
-
 }
 
 uint32_t DistributedObjectImpl::PutChar(const std::string &key, char value)
@@ -133,7 +133,7 @@ uint32_t DistributedObjectImpl::PutShort(const std::string &key, int16_t value)
     return SUCCESS;
 }
 
-Bytes DistributedObjectImpl::StrToFieldBytes (const std::string &src)
+Bytes DistributedObjectImpl::StrToFieldBytes(const std::string &src)
 {
     Bytes data;
     PutNum(0, &stringVal, sizeof(stringVal), data);
@@ -337,7 +337,7 @@ uint32_t DistributedObjectImpl::GetByte(const std::string &key, int8_t &value)
         LOG_ERROR("DistributedObjectImpl:GetByte size err.");
         return ERR_NOT_EXIST;
     }
-    value =data[0];
+    value = data[0];
     return SUCCESS;
 }
 
@@ -361,11 +361,6 @@ uint32_t DistributedObjectImpl::GetString(const std::string &key, std::string &v
 
 uint32_t DistributedObjectImpl::GetObjectId(std::string &objectId)
 {
-    int ret = updateObject();
-    if(ret != SUCCESS){
-        LOG_ERROR("DistributedObjectImpl:GetObjectId updateObject err. ret %d", ret);
-        return ERR_ID_EXIST;
-    }
     StringUtils::BytesToString(flatObject_->GetId(), objectId);
     return SUCCESS;
 }
@@ -375,19 +370,16 @@ uint32_t DistributedObjectImpl::updateObject()
     std::string id;
     StringUtils::BytesToString(flatObject_->GetId(), id);
     int32_t ret = flatObjectStore_->Get(flatObject_->GetId(), *flatObject_);
-    std::map<Bytes, Bytes> fields = flatObject_->GetFields();
-    auto iter = fields.begin();
-    while (iter != fields.end()) {
-        std::string key;
-        std::string value;
-        StringUtils::BytesToString(iter->first, key);
-        StringUtils::BytesToString(iter->second, value);
-        iter++;
-    }
     if (ret != SUCCESS) {
         LOG_ERROR("DistributedObjectImpl:updateObject err, ret %d", ret);
         return ret;
     }
+    std::map<Bytes, Bytes> fields = flatObject_->GetFields();
+    auto iter = fields.begin();
+    std::string key;
+    std::string value;
+    StringUtils::BytesToString(iter->first, key);
+    StringUtils::BytesToString(iter->second, value);
     LOG_INFO("DistributedObjectImpl:update object success.");
     return SUCCESS;
 }

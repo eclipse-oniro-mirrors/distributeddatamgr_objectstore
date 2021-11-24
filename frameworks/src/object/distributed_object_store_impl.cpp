@@ -52,7 +52,6 @@ DistributedObjectImpl *DistributedObjectStoreImpl::CacheObject(FlatObject *flatO
     return object;
 }
 
-
 DistributedObject *DistributedObjectStoreImpl::CreateObject(const std::string &classPath, const std::string &key)
 {
     if (flatObjectStore_ == nullptr) {
@@ -120,12 +119,14 @@ uint32_t DistributedObjectStoreImpl::Watch(DistributedObject *object, std::share
     }
     std::shared_ptr<WatcherProxy> watcherProxy = std::make_shared<WatcherProxy>(watcher);
     // object is abstract, it must be DistributedObjectImpl pointer
-    uint32_t ret = flatObjectStore_->Watch(dynamic_cast<DistributedObjectImpl *>(object)->GetObject()->GetId(), watcherProxy);
+    uint32_t ret = flatObjectStore_
+            ->Watch(dynamic_cast<DistributedObjectImpl *>(object)->GetObject()->GetId(), watcherProxy);
     if (ret != SUCCESS) {
-        LOG_ERROR("DistributedObjectStoreImpl::Watch ret:%d",ret);
+        LOG_ERROR("DistributedObjectStoreImpl::Watch ret:%d", ret);
         return ret;
     }
     watchers_.insert_or_assign(object, watcherProxy);
+    LOG_INFO("DistributedObjectStoreImpl:Watch object success.");
     return SUCCESS;
 }
 
@@ -135,12 +136,14 @@ uint32_t DistributedObjectStoreImpl::UnWatch(DistributedObject *object)
         return ERR_INVAL;
     }
     if (watchers_.count(object) == 0) {
+        LOG_INFO("DistributedObjectStoreImpl:UnWatch no watcher.");
         return SUCCESS;
     }
     std::shared_ptr<FlatObjectWatcher> proxy = watchers_.at(object);
     Bytes objectId = dynamic_cast<DistributedObjectImpl *>(object)->GetObject()->GetId();
     flatObjectStore_->Unwatch(objectId, proxy);
     watchers_.erase(object);
+    LOG_INFO("DistributedObjectStoreImpl:UnWatch object success.");
     return SUCCESS;
 }
 
