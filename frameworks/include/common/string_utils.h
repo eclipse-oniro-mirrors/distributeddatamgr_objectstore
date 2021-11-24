@@ -98,7 +98,7 @@ public:
         }
         std::vector<uint8_t>::const_iterator first = input.begin() + sizeof(int32_t);
         std::vector<uint8_t>::const_iterator end = input.end();
-        Bytes rstStr(first,end);
+        Bytes rstStr(first, end);
         str.assign(reinterpret_cast<char*>(rstStr.data()), rstStr.size());
         return SUCCESS;
     }

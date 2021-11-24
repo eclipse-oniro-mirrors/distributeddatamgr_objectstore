@@ -20,7 +20,6 @@
 #include "string_utils.h"
 #include "bytes.h"
 #include "logger.h"
-#include "string.h"
 #include "securec.h"
 
 namespace OHOS::ObjectStore {
@@ -99,18 +98,6 @@ uint32_t GetNum(Bytes &data, int32_t offset, void* val, int32_t valLen)
     return SUCCESS;
 }
 
-/*uint32_t BytesToString(Bytes input, std::string& str)
-{
-    if (input.end() - input.begin() <= sizeof(int32_t)) {
-        return ERR_INVAL;
-    }
-    std::vector<uint8_t>::const_iterator first = input.begin() + sizeof(int32_t);
-    std::vector<uint8_t>::const_iterator end = input.end();
-    Bytes rstStr(first,end);
-    str.assign(reinterpret_cast<char*>(rstStr.data()), rstStr.size());
-    return SUCCESS;
-}*/
-
 void TransBytes(void* input, int32_t inputLen, int32_t flag, Bytes &data)
 {
     data.resize(sizeof(int32_t) + inputLen, 0);
@@ -145,7 +132,6 @@ uint32_t DistributedObjectImpl::PutShort(const std::string &key, int16_t value)
     flatObject_->SetField(StrToFieldBytes(key), data);
     return SUCCESS;
 }
-
 
 Bytes DistributedObjectImpl::StrToFieldBytes (const std::string &src)
 {
@@ -211,7 +197,7 @@ uint32_t DistributedObjectImpl::GetChar(const std::string &key, char &value)
         return ERR_GET_LIST;
     }
     Bytes data;
-    Bytes keyBytes= StrToFieldBytes(key);
+    Bytes keyBytes = StrToFieldBytes(key);
     ret = flatObject_->GetField(keyBytes, data);
     if (ret != SUCCESS) {
         LOG_ERROR("DistributedObjectImpl:GetChar field not exist. %d %s", ret, key.c_str());
@@ -231,7 +217,7 @@ uint32_t DistributedObjectImpl::GetInt(const std::string &key, int32_t &value)
         return ERR_GET_LIST;
     }
     Bytes data;
-    Bytes keyBytes= StrToFieldBytes(key);
+    Bytes keyBytes = StrToFieldBytes(key);
     ret = flatObject_->GetField(keyBytes, data);
     if (ret != SUCCESS) {
         LOG_ERROR("DistributedObjectImpl:GetInt field not exist. %d %s", ret, key.c_str());
@@ -249,7 +235,7 @@ uint32_t DistributedObjectImpl::GetShort(const std::string &key, int16_t &value)
         return ERR_GET_LIST;
     }
     Bytes data;
-    Bytes keyBytes= StrToFieldBytes(key);
+    Bytes keyBytes = StrToFieldBytes(key);
     ret = flatObject_->GetField(keyBytes, data);
     if (ret != SUCCESS) {
         LOG_ERROR("DistributedObjectImpl:GetShort field not exist. %d %s", ret, key.c_str());
@@ -267,7 +253,7 @@ uint32_t DistributedObjectImpl::GetLong(const std::string &key, int64_t &value)
         return ERR_GET_LIST;
     }
     Bytes data;
-    Bytes keyBytes= StrToFieldBytes(key);
+    Bytes keyBytes = StrToFieldBytes(key);
     ret = flatObject_->GetField(keyBytes, data);
     if (ret != SUCCESS) {
         LOG_ERROR("DistributedObjectImpl:GetLong field not exist. %d %s", ret, key.c_str());
@@ -285,7 +271,7 @@ uint32_t DistributedObjectImpl::GetFloat(const std::string &key, float &value)
         return ERR_GET_LIST;
     }
     Bytes data;
-    Bytes keyBytes= StrToFieldBytes(key);
+    Bytes keyBytes = StrToFieldBytes(key);
     ret = flatObject_->GetField(keyBytes, data);
     if (ret != SUCCESS) {
         LOG_ERROR("DistributedObjectImpl:GetFloat field not exist. %d %s", ret, key.c_str());
@@ -303,7 +289,7 @@ uint32_t DistributedObjectImpl::GetDouble(const std::string &key, double &value)
         return ERR_GET_LIST;
     }
     Bytes data;
-    Bytes keyBytes= StrToFieldBytes(key);
+    Bytes keyBytes = StrToFieldBytes(key);
     ret = flatObject_->GetField(keyBytes, data);
     if (ret != SUCCESS) {
         LOG_ERROR("DistributedObjectImpl:GetDouble field not exist. %d %s", ret, key.c_str());
@@ -322,7 +308,7 @@ uint32_t DistributedObjectImpl::GetBoolean(const std::string &key, bool &value)
     }
     int32_t flag = 0;
     Bytes data;
-    Bytes keyBytes= StrToFieldBytes(key);
+    Bytes keyBytes = StrToFieldBytes(key);
     ret = flatObject_->GetField(keyBytes, data);
     if (ret != SUCCESS) {
         LOG_ERROR("DistributedObjectImpl:GetBoolean field not exist. %d %s", ret, key.c_str());
@@ -341,7 +327,7 @@ uint32_t DistributedObjectImpl::GetByte(const std::string &key, int8_t &value)
         return ERR_GET_LIST;
     }
     Bytes data;
-    Bytes keyBytes= StrToFieldBytes(key);
+    Bytes keyBytes = StrToFieldBytes(key);
     ret = flatObject_->GetField(keyBytes, data);
     if (ret != SUCCESS) {
         LOG_ERROR("DistributedObjectImpl:GetByte field not exist. %d %s", ret, key.c_str());
@@ -363,7 +349,7 @@ uint32_t DistributedObjectImpl::GetString(const std::string &key, std::string &v
         return ERR_GET_LIST;
     }
     Bytes data;
-    Bytes keyBytes= StrToFieldBytes(key);
+    Bytes keyBytes = StrToFieldBytes(key);
     ret = flatObject_->GetField(keyBytes, data);
     if (ret != SUCCESS) {
         LOG_ERROR("DistributedObjectImpl:GetString field not exist. %d %s", ret, key.c_str());
@@ -377,20 +363,17 @@ uint32_t DistributedObjectImpl::GetObjectId(std::string &objectId)
 {
     int ret = updateObject();
     if(ret != SUCCESS){
-        LOG_ERROR("DistributedObjectImpl:GetObjectId updateObject err. ret %d",ret);
+        LOG_ERROR("DistributedObjectImpl:GetObjectId updateObject err. ret %d", ret);
         return ERR_ID_EXIST;
     }
     StringUtils::BytesToString(flatObject_->GetId(), objectId);
     return SUCCESS;
 }
 
-
-
 uint32_t DistributedObjectImpl::updateObject()
 {
     std::string id;
     StringUtils::BytesToString(flatObject_->GetId(), id);
-    LOG_ERROR("update id %s", id.c_str());
     int32_t ret = flatObjectStore_->Get(flatObject_->GetId(), *flatObject_);
     std::map<Bytes, Bytes> fields = flatObject_->GetFields();
     auto iter = fields.begin();
@@ -399,11 +382,14 @@ uint32_t DistributedObjectImpl::updateObject()
         std::string value;
         StringUtils::BytesToString(iter->first, key);
         StringUtils::BytesToString(iter->second, value);
-        LOG_ERROR("update key %s, value %s",key.c_str(), value.c_str());
         iter++;
     }
-    LOG_INFO("DistributedObjectImpl:updateObject %d",ret);
-    return ret;
+    if (ret != SUCCESS) {
+        LOG_ERROR("DistributedObjectImpl:updateObject err, ret %d", ret);
+        return ret;
+    }
+    LOG_INFO("DistributedObjectImpl:update object success.");
+    return SUCCESS;
 }
 
 FlatObject *DistributedObjectImpl::GetObject()
@@ -412,5 +398,5 @@ FlatObject *DistributedObjectImpl::GetObject()
 }
 
 DistributedObjectImpl::DistributedObjectImpl(FlatObject *flatObject, FlatObjectStore *flatObjectStore)
-        : flatObject_(flatObject), flatObjectStore_(flatObjectStore) {}
+    : flatObject_(flatObject), flatObjectStore_(flatObjectStore) {}
 }

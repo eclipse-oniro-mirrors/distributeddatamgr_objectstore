@@ -112,19 +112,21 @@ uint32_t DistributedObjectStoreImpl::Watch(DistributedObject *object, std::share
 {
     if (object == nullptr || flatObjectStore_ == nullptr) {
         LOG_ERROR("DistributedObjectStoreImpl::Watch err object ");
-        return ERR_INVAL;    //todo
+        return ERR_INVAL;
     }
     if (watchers_.count(object) != 0) {
         LOG_ERROR("DistributedObjectStoreImpl::Watch already gets object");
-        return ERR_EXIST;    //todo
+        return ERR_EXIST;
     }
-    std::shared_ptr<FlatObjectWatcher> watcherProxy = std::make_shared<WatcherProxy>(watcher);
+    std::shared_ptr<WatcherProxy> watcherProxy = std::make_shared<WatcherProxy>(watcher);
     // object is abstract, it must be DistributedObjectImpl pointer
     uint32_t ret = flatObjectStore_->Watch(dynamic_cast<DistributedObjectImpl *>(object)->GetObject()->GetId(), watcherProxy);
     if (ret != SUCCESS) {
-        //todo
+        LOG_ERROR("DistributedObjectStoreImpl::Watch ret:%d",ret);
+        return ret;
     }
     watchers_.insert_or_assign(object, watcherProxy);
+    return SUCCESS;
 }
 
 uint32_t DistributedObjectStoreImpl::UnWatch(DistributedObject *object)
@@ -136,7 +138,8 @@ uint32_t DistributedObjectStoreImpl::UnWatch(DistributedObject *object)
         return SUCCESS;
     }
     std::shared_ptr<FlatObjectWatcher> proxy = watchers_.at(object);
-    flatObjectStore_->Unwatch(dynamic_cast<DistributedObjectImpl *>(object)->GetObject()->GetId(), proxy);
+    Bytes objectId = dynamic_cast<DistributedObjectImpl *>(object)->GetObject()->GetId();
+    flatObjectStore_->Unwatch(objectId, proxy);
     watchers_.erase(object);
     return SUCCESS;
 }
@@ -154,20 +157,20 @@ void DistributedObjectStoreImpl::Close()
 }
 
 WatcherProxy::WatcherProxy(const std::shared_ptr<ObjectWatcher> objectWatcher)
-        : objectWatcher_(objectWatcher)
+    : objectWatcher_(objectWatcher)
 {}
 
 void WatcherProxy::OnChanged(const Bytes &id)
 {
     std::string str;
-    StringUtils::BytesToString(id,str);
+    StringUtils::BytesToString(id, str);
     objectWatcher_->OnChanged(str);
 }
 
 void WatcherProxy::OnDeleted(const Bytes &id)
 {
     std::string str;
-    StringUtils::BytesToString(id,str);
+    StringUtils::BytesToString(id, str);
     objectWatcher_->OnDeleted(str);
 }
 }  // namespace OHOS::ObjectStore
