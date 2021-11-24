@@ -90,7 +90,7 @@ uint32_t GetNum(Bytes &data, int32_t offset, void* val, int32_t valLen)
     uint8_t *value = (uint8_t *)val;
     if (data.size() != offset + valLen) {
         LOG_ERROR("DistributedObjectImpl:GetNum data.size() %d, offset %d, valLen %d",
-                data.size(), offset, valLen);
+            data.size(), offset, valLen);
         return ERR_RANGE_LIST;
     }
     for (int i = 0; i < valLen; i++) {
