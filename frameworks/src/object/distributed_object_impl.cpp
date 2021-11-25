@@ -293,6 +293,10 @@ uint32_t DistributedObjectImpl::GetFloat(const std::string &key, float &value)
         LOG_ERROR("DistributedObjectImpl:GetFloat field not exist. %d %s", ret, key.c_str());
         return ret;
     }
+    if (data.size() != sizeof(value)) {
+        LOG_ERROR("DistributedObjectImpl:GetFloat size err.");
+        return ERR_FLOAT_SIZE;
+    }
     uint32_t getRet = GetNum(data, sizeof(floatVal), &value, sizeof(value));
     if (getRet != SUCCESS) {
         LOG_ERROR("DistributedObjectImpl::GetFloat getNum err.ret %d", getRet);
@@ -313,6 +317,10 @@ uint32_t DistributedObjectImpl::GetDouble(const std::string &key, double &value)
     if (ret != SUCCESS) {
         LOG_ERROR("DistributedObjectImpl:GetDouble field not exist. %d %s", ret, key.c_str());
         return ret;
+    }
+    if (data.size() != sizeof(value)) {
+        LOG_ERROR("DistributedObjectImpl:GetDouble size err.");
+        return ERR_DOUBLE_SIZE;
     }
     uint32_t getRet = GetNum(data, sizeof(doubleVal), &value, sizeof(value));
     if (getRet != SUCCESS) {
