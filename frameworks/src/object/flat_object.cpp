@@ -14,6 +14,7 @@
  */
 
 #include "flat_object.h"
+#include "logger.h"
 #include "objectstore_errors.h"
 
 namespace OHOS::ObjectStore {
@@ -35,7 +36,8 @@ const std::map<Bytes, Bytes> &FlatObject::GetFields() const
 const uint32_t &FlatObject::GetField(Bytes &key, Bytes &value) const
 {
     if (fields_.count(key) == 0) {
-        return ERR_INVAL;
+        LOG_ERROR("FlatObject::GetField key is null.");
+        return ERR_KEYVAL;
     }
     value = fields_.at(key);
     return SUCCESS;

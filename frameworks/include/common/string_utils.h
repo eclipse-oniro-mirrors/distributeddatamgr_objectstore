@@ -94,7 +94,8 @@ public:
     static uint32_t BytesToString(Bytes input, std::string& str)
     {
         if (input.end() - input.begin() <= sizeof(int32_t)) {
-            return ERR_INVAL;
+            LOG_ERROR("StringUtils:BytesToString get input len err.");
+            return ERR_DATA_LEN;
         }
         std::vector<uint8_t>::const_iterator first = input.begin() + sizeof(int32_t);
         std::vector<uint8_t>::const_iterator end = input.end();

@@ -47,7 +47,7 @@ public:
     FlatObject *GetObject();
 
 private:
-    uint32_t updateObject();
+    uint32_t UpdateObject();
     Bytes StrToFieldBytes(const std::string &src);
     FlatObject *flatObject_;
     FlatObjectStore *flatObjectStore_ = nullptr;

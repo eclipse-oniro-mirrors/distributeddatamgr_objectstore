@@ -61,6 +61,9 @@ constexpr uint32_t ERR_EXIST = BASE_ERR_OFFSET + 35;         // Already exist
 constexpr uint32_t ERR_NOTOPENED = BASE_ERR_OFFSET + 36;     // Invalid argument
 constexpr uint32_t ERR_NOT_EXIST = BASE_ERR_OFFSET + 37;     // not exist
 constexpr uint32_t ERR_ID_EXIST = BASE_ERR_OFFSET + 38;     // objectId not exist
+constexpr uint32_t ERR_DATA_LEN = BASE_ERR_OFFSET + 39;     // get data len failed
+constexpr uint32_t ERR_KEYVAL = BASE_ERR_OFFSET + 40;     // get key value failed
+constexpr uint32_t ERR_BYTE_SIZE = BASE_ERR_OFFSET + 41;     //get byte size failed
 }  // namespace OHOS::ObjectStore
 
 #endif

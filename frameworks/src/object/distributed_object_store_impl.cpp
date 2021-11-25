@@ -19,7 +19,6 @@
 #include "object_store_manager.h"
 #include "string_utils.h"
 #include "object_utils.h"
-#include "string_utils.h"
 #include "securec.h"
 
 namespace OHOS::ObjectStore {
@@ -166,14 +165,20 @@ WatcherProxy::WatcherProxy(const std::shared_ptr<ObjectWatcher> objectWatcher)
 void WatcherProxy::OnChanged(const Bytes &id)
 {
     std::string str;
-    StringUtils::BytesToString(id, str);
+    uint32_t ret = StringUtils::BytesToString(id, str);
+    if (ret != SUCCESS) {
+        LOG_ERROR("WatcherProxy:OnChanged bytesToString err,ret %d", ret);
+    }
     objectWatcher_->OnChanged(str);
 }
 
 void WatcherProxy::OnDeleted(const Bytes &id)
 {
     std::string str;
-    StringUtils::BytesToString(id, str);
+    uint32_t ret = StringUtils::BytesToString(id, str);
+    if (ret != SUCCESS) {
+        LOG_ERROR("WatcherProxy:OnChanged bytesToString err,ret %d", ret);
+    }
     objectWatcher_->OnDeleted(str);
 }
 }  // namespace OHOS::ObjectStore
