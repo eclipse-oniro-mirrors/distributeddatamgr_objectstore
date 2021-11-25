@@ -413,12 +413,12 @@ uint32_t DistributedObjectImpl::UpdateObject()
     std::string key;
     std::string value;
     uint32_t keyRet = StringUtils::BytesToString(iter->first, key);
-    if(keyRet != SUCCESS) {
+    if (keyRet != SUCCESS) {
         LOG_ERROR("DistributedObjectImpl:UpdateObject keyToStr err ,ret %d", keyRet);
         return keyRet;
     }
     uint32_t valRet = StringUtils::BytesToString(iter->second, value);
-    if(valRet != SUCCESS) {
+    if (valRet != SUCCESS) {
         LOG_ERROR("DistributedObjectImpl:UpdateObject valToStr err ,ret %d", valRet);
         return valRet;
     }
