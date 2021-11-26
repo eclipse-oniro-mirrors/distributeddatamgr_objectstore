@@ -18,18 +18,18 @@ config("objectStore_config") {
   ldflags = [
     "-lstdc++",
     "-fPIC",
-    "-D_FORTIFY_SOURCE=2"
+    "-D_FORTIFY_SOURCE=2",
   ]
 }
 
 static_library("objectstoremgr") {
- configs -= [ "//build/lite/config:language_cpp" ]
+  configs -= [ "//build/lite/config:language_cpp" ]
   cflags = [ "-fPIC" ]
-   cflags_cc = cflags
-   cflags_cc += [ "-std=c++17" ]
- configs += [ ":objectStore_config" ]
+  cflags_cc = cflags
+  cflags_cc += [ "-std=c++17" ]
+  configs += [ ":objectStore_config" ]
 
-include_dirs = [
+  include_dirs = [
     "frameworks/include",
     "frameworks/src/storage",
     "frameworks/include/common",
@@ -43,17 +43,20 @@ include_dirs = [
     "//foundation/communication/dsoftbus/interfaces/kits/bus_center",
     "//foundation/communication/dsoftbus/interfaces/kits/transport",
     "//foundation/communication/dsoftbus/interfaces/kits/common",
-    #"//foundation/communication/dsoftbus/core/common/include",
-]
 
-sources = [
+    #"//foundation/communication/dsoftbus/core/common/include",
+  ]
+
+  sources = [
+    "frameworks/include/coordinator/operation.h",
     "frameworks/src/common/object_utils.cpp",
+    "frameworks/src/common/thread_pool.cpp",
     "frameworks/src/communicator/communicator.cpp",
+    "frameworks/src/communicator/communicator_softbus_adapter.cpp",
     "frameworks/src/communicator/network.cpp",
     "frameworks/src/communicator/network_manager.cpp",
     "frameworks/src/communicator/rpc_network.cpp",
     "frameworks/src/communicator/rpc_session.cpp",
-    "frameworks/src/communicator/communicator_softbus_adapter.cpp",
     "frameworks/src/coordinator/coordinate_engine.cpp",
     "frameworks/src/coordinator/local_object_task.cpp",
     "frameworks/src/coordinator/local_observers.cpp",
@@ -64,7 +67,6 @@ sources = [
     "frameworks/src/coordinator/operation_dispatcher.cpp",
     "frameworks/src/coordinator/remote_object_task.cpp",
     "frameworks/src/coordinator/remote_observers.cpp",
-    "frameworks/src/storage/flat_object_storage_engine.cpp",
     "frameworks/src/object/distributed_object_impl.cpp",
     "frameworks/src/object/distributed_object_store_impl.cpp",
     "frameworks/src/object/distributed_objectstore_manager.cpp",
@@ -74,27 +76,19 @@ sources = [
     "frameworks/src/object/object_coordinator.cpp",
     "frameworks/src/object/object_store_executor.cpp",
     "frameworks/src/object/object_store_manager.cpp",
-    "frameworks/src/common/thread_pool.cpp",
-    "frameworks/include/coordinator/operation.h"
-]
+    "frameworks/src/storage/flat_object_storage_engine.cpp",
+  ]
 
-deps = [
-   "//base/hiviewdfx/hilog_lite/frameworks/featured:hilog_shared",
-]
-public_deps = [
-  "//foundation/distributedschedule/samgr_lite/samgr:samgr",
-  "//foundation/communication/dsoftbus/sdk/bus_center/service:dsoftbus_bus_center_service_sdk",
-  "//foundation/communication/dsoftbus/sdk/transmission/session:dsoftbus_trans_session_sdk",
-  "//third_party/bounds_checking_function:libsec_shared",
-]
+  deps = [ "//base/hiviewdfx/hilog_lite/frameworks/featured:hilog_shared" ]
+  public_deps = [
+    "//foundation/communication/dsoftbus/sdk:softbus_client",
+    "//foundation/distributedschedule/samgr_lite/samgr:samgr",
+    "//third_party/bounds_checking_function:libsec_shared",
+  ]
 }
 
 static_library("objectstore_sdk") {
-    include_dirs = [
-        "interfaces/innerkits",
-    ]
-    deps = [
-         "//foundation/distributeddatamgr/objectstore:objectstoremgr",
-    ]
+  include_dirs = [ "interfaces/innerkits" ]
+  deps = [ "//foundation/distributeddatamgr/objectstore:objectstoremgr" ]
 }
 #}

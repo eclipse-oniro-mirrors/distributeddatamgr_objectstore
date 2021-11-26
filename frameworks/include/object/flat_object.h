@@ -27,6 +27,7 @@ public:
     const Bytes &GetId() const;
     void SetId(const Bytes &id);
     const std::map<Bytes, Bytes> &GetFields() const;
+    const uint32_t &GetField(Bytes &key, Bytes &value) const;
     void SetField(const Bytes &field, const Bytes &value);
     void SetFields(const std::map<Bytes, Bytes> &fields);
 
