@@ -19,6 +19,7 @@
 #include "object_store_manager.h"
 #include "string_utils.h"
 #include "object_utils.h"
+#include "securec.h"
 
 namespace OHOS::ObjectStore {
 DistributedObjectStoreImpl::DistributedObjectStoreImpl(FlatObjectStore *flatObjectStore)
@@ -39,9 +40,9 @@ namespace {
     }
 }  // namespace
 
-DistributedObjectImpl *DistributedObjectStoreImpl::CacheObject(FlatObject *flatObject)
+DistributedObjectImpl *DistributedObjectStoreImpl::CacheObject(FlatObject *flatObject, FlatObjectStore *flatObjectStore)
 {
-    DistributedObjectImpl *object = new (std::nothrow) DistributedObjectImpl(flatObject);
+    DistributedObjectImpl *object = new (std::nothrow) DistributedObjectImpl(flatObject, flatObjectStore);
     if (object == nullptr) {
         return nullptr;
     }
@@ -62,7 +63,6 @@ DistributedObject *DistributedObjectStoreImpl::CreateObject(const std::string &c
         LOG_ERROR("no memory for FlatObjectStore malloc!");
         return nullptr;
     }
-    DistributedObject *object = nullptr;
     const std::vector<std::string> remoteIds = flatObjectStore_->GetRemoteStoreIds();
     for (const auto &deviceId : flatObjectStore_->GetRemoteStoreIds()) {
         std::string prefix = ObjectUtils::GenObjectIdPrefix(deviceId, DEFAULT_USER_ID,
@@ -77,7 +77,7 @@ DistributedObject *DistributedObjectStoreImpl::CreateObject(const std::string &c
                 continue;
             }
             LOG_INFO("find exist object");
-            return CacheObject(flatObject);
+            return CacheObject(flatObject, flatObjectStore_);
         }
     }
     std::string oid = GenerateObjectId(flatObjectStore_->GetPrefix(), classPath, key);
@@ -85,7 +85,7 @@ DistributedObject *DistributedObjectStoreImpl::CreateObject(const std::string &c
     flatObject->SetField(StringUtils::StrToBytes("stubInfo"), StringUtils::StrToBytes(""));
     flatObjectStore_->Put(*flatObject);
     LOG_INFO("create object for owner");
-    return CacheObject(flatObject);
+    return CacheObject(flatObject, flatObjectStore_);
 }
 
 uint32_t DistributedObjectStoreImpl::Sync(DistributedObject *object)
@@ -95,6 +95,75 @@ uint32_t DistributedObjectStoreImpl::Sync(DistributedObject *object)
     }
     // object is abstract, it must be DistributedObjectImpl pointer
     return flatObjectStore_->Put(*dynamic_cast<DistributedObjectImpl *>(object)->GetObject());
+}
+
+uint32_t DistributedObjectStoreImpl::Delete(DistributedObject *object)
+{
+    if (object == nullptr || flatObjectStore_ == nullptr) {
+        return ERR_INVAL;
+    }
+    // object is abstract, it must be DistributedObjectImpl pointer
+    return flatObjectStore_->Delete(dynamic_cast<DistributedObjectImpl *>(object)->GetObject()->GetId());
+}
+
+uint32_t DistributedObjectStoreImpl::Get(const std::string &objectId, DistributedObject *object)
+{
+    std::string oid;
+    auto iter = objects_.begin();
+    while (iter != objects_.end()) {
+        uint32_t ret = (*iter)->GetObjectId(oid);
+        if (ret != SUCCESS) {
+            LOG_ERROR("DistributedObjectStoreImpl::Get oid err, ret %d", ret);
+            return ret;
+        }
+        if (objectId == oid) {
+            object = *iter;
+            return SUCCESS;
+        }
+        iter++;
+    }
+    LOG_ERROR("DistributedObjectStoreImpl::Get object err, no object");
+    return ERR_GET_OBJECT;
+}
+
+uint32_t DistributedObjectStoreImpl::Watch(DistributedObject *object, std::shared_ptr<ObjectWatcher> watcher)
+{
+    if (object == nullptr || flatObjectStore_ == nullptr) {
+        LOG_ERROR("DistributedObjectStoreImpl::Watch err object ");
+        return ERR_INVAL;
+    }
+    if (watchers_.count(object) != 0) {
+        LOG_ERROR("DistributedObjectStoreImpl::Watch already gets object");
+        return ERR_EXIST;
+    }
+    std::shared_ptr<WatcherProxy> watcherProxy = std::make_shared<WatcherProxy>(watcher);
+    // object is abstract, it must be DistributedObjectImpl pointer
+    uint32_t ret = flatObjectStore_
+            ->Watch(dynamic_cast<DistributedObjectImpl *>(object)->GetObject()->GetId(), watcherProxy);
+    if (ret != SUCCESS) {
+        LOG_ERROR("DistributedObjectStoreImpl::Watch ret:%d", ret);
+        return ret;
+    }
+    watchers_.insert_or_assign(object, watcherProxy);
+    LOG_INFO("DistributedObjectStoreImpl:Watch object success.");
+    return SUCCESS;
+}
+
+uint32_t DistributedObjectStoreImpl::UnWatch(DistributedObject *object)
+{
+    if (object == nullptr || flatObjectStore_ == nullptr) {
+        return ERR_INVAL;
+    }
+    if (watchers_.count(object) == 0) {
+        LOG_INFO("DistributedObjectStoreImpl:UnWatch no watcher.");
+        return SUCCESS;
+    }
+    std::shared_ptr<FlatObjectWatcher> proxy = watchers_.at(object);
+    Bytes objectId = dynamic_cast<DistributedObjectImpl *>(object)->GetObject()->GetId();
+    flatObjectStore_->Unwatch(objectId, proxy);
+    watchers_.erase(object);
+    LOG_INFO("DistributedObjectStoreImpl:UnWatch object success.");
+    return SUCCESS;
 }
 
 void DistributedObjectStoreImpl::Close()
@@ -107,5 +176,29 @@ void DistributedObjectStoreImpl::Close()
         }
     }
     flatObjectStore_->Close();
+}
+
+WatcherProxy::WatcherProxy(const std::shared_ptr<ObjectWatcher> objectWatcher)
+    : objectWatcher_(objectWatcher)
+{}
+
+void WatcherProxy::OnChanged(const Bytes &id)
+{
+    std::string str;
+    uint32_t ret = StringUtils::BytesToString(id, str);
+    if (ret != SUCCESS) {
+        LOG_ERROR("WatcherProxy:OnChanged bytesToString err,ret %d", ret);
+    }
+    objectWatcher_->OnChanged(str);
+}
+
+void WatcherProxy::OnDeleted(const Bytes &id)
+{
+    std::string str;
+    uint32_t ret = StringUtils::BytesToString(id, str);
+    if (ret != SUCCESS) {
+        LOG_ERROR("WatcherProxy:OnChanged bytesToString err,ret %d", ret);
+    }
+    objectWatcher_->OnDeleted(str);
 }
 }  // namespace OHOS::ObjectStore

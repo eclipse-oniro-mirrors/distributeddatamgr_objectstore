@@ -32,6 +32,22 @@ public:
     virtual uint32_t PutBoolean(const std::string &key, bool value) = 0;
     virtual uint32_t PutString(const std::string &key, const std::string &value) = 0;
     virtual uint32_t PutByte(const std::string &key, int8_t value) = 0;
+    virtual uint32_t GetChar(const std::string &key, char &value) = 0;
+    virtual uint32_t GetInt(const std::string &key, int32_t &value) = 0;
+    virtual uint32_t GetShort(const std::string &key, int16_t &value) = 0;
+    virtual uint32_t GetLong(const std::string &key, int64_t &value) = 0;
+    virtual uint32_t GetFloat(const std::string &key, float &value) = 0;
+    virtual uint32_t GetDouble(const std::string &key, double &value) = 0;
+    virtual uint32_t GetBoolean(const std::string &key, bool &value) = 0;
+    virtual uint32_t GetString(const std::string &key, std::string &value) = 0;
+    virtual uint32_t GetByte(const std::string &key, int8_t &value) = 0;
+    virtual uint32_t GetObjectId(std::string &objectId) = 0;
+};
+
+class ObjectWatcher {
+public:
+    virtual void OnChanged(const std::string &id) = 0;
+    virtual void OnDeleted(const std::string &id) = 0;
 };
 }  // namespace OHOS
 #endif // DISTRIBUTED_OBJECT_H

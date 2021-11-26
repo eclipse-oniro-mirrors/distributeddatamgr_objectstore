@@ -20,6 +20,9 @@
 #include <sstream>
 #include <string>
 #include <vector>
+#include "bytes.h"
+#include "objectstore_errors.h"
+#include "logger.h"
 
 namespace OHOS::ObjectStore {
 class StringUtils final {
@@ -87,6 +90,18 @@ public:
         dst.resize(src.size());
         dst.assign(src.begin(), src.end());
         return dst;
+    }
+    static uint32_t BytesToString(Bytes input, std::string& str)
+    {
+        if (input.end() - input.begin() <= sizeof(int32_t)) {
+            LOG_ERROR("StringUtils:BytesToString get input len err.");
+            return ERR_DATA_LEN;
+        }
+        std::vector<uint8_t>::const_iterator first = input.begin() + sizeof(int32_t);
+        std::vector<uint8_t>::const_iterator end = input.end();
+        Bytes rstStr(first, end);
+        str.assign(reinterpret_cast<char*>(rstStr.data()), rstStr.size());
+        return SUCCESS;
     }
 };
 }  // namespace OHOS::ObjectStore

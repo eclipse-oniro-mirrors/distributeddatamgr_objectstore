@@ -30,7 +30,7 @@ private:
     uint32_t PublishDelete(const Bytes &key) override;
     uint32_t Put(const Bytes &key, const std::any &value) override;
     uint32_t Get(const Bytes &key, std::any &value) override;
-    uint32_t Delete(const Bytes &key);
+    uint32_t Delete(const Bytes &key) override;
 };
 
 
