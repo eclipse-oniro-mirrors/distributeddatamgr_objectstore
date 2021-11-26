@@ -112,7 +112,7 @@ uint32_t DistributedObjectStoreImpl::Get(const std::string &objectId, Distribute
     auto iter = objects_.begin();
     while (iter != objects_.end()) {
         uint32_t ret = (*iter)->GetObjectId(oid);
-        if (ret != SUCCESS){
+        if (ret != SUCCESS) {
             LOG_ERROR("DistributedObjectStoreImpl::Get oid err, ret %d", ret);
             return ret;
         }
