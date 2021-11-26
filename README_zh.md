@@ -216,7 +216,7 @@ void TestObjectWatcher::OnDeleted(const std::string &id)
 }
 ```
 
-  #### 10.监听/取消监听数据对象
+  #### 9.监听/取消监听数据对象
 在实现ObjectWatcher之后，可以对数据对象进行监听，取消监听后，数据对象改变时不会回调OnChanged接口。
 ```c
 //监听数据对象
@@ -227,14 +227,14 @@ ret = store->UnWatch(object);
 TEST_ASSERT_TRUE(ret == 0);
 ```
 
-  #### 11.删除数据对象
+  #### 10.删除数据对象
 数据对象调用delete接口后，数据对象仓库会将其删除。
 ```c
 ret = store->Delete(object);
 TEST_ASSERT_TRUE(ret == 0);
 ```
 
-  #### 12.关闭数据对象仓库
+  #### 11.关闭数据对象仓库
 数据对象仓库使用完毕后，需要调用Destroy接口进行关闭，关闭后所有的数据对象都会被销毁。
 ```c
 ptr->Destroy(BUNDLE_NAME, SESSION_ID);
