@@ -106,6 +106,25 @@ uint32_t DistributedObjectStoreImpl::Delete(DistributedObject *object)
     return flatObjectStore_->Delete(dynamic_cast<DistributedObjectImpl *>(object)->GetObject()->GetId());
 }
 
+uint32_t DistributedObjectStoreImpl::Get(const std::string &objectId, DistributedObject *object)
+{
+    std::string oid;
+    auto iter = objects_.begin();
+    while (iter != objects_.end()) {
+        uint32_t ret = (*iter)->GetObjectId(oid);
+        if (ret != SUCCESS){
+            LOG_ERROR("DistributedObjectStoreImpl::Get oid err, ret %d", ret);
+            return ret;
+        }
+        if (objectId == oid) {
+            object = *iter;
+            return SUCCESS;
+        }
+    }
+    LOG_ERROR("DistributedObjectStoreImpl::Get object err, no object");
+    return ERR_GET_OBJECT;
+}
+
 uint32_t DistributedObjectStoreImpl::Watch(DistributedObject *object, std::shared_ptr<ObjectWatcher> watcher)
 {
     if (object == nullptr || flatObjectStore_ == nullptr) {

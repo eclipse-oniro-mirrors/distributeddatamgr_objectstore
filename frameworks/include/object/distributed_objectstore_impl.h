@@ -27,7 +27,7 @@ class DistributedObjectStoreImpl : public DistributedObjectStore {
 public:
     DistributedObjectStoreImpl(FlatObjectStore *flatObjectStore);
     ~DistributedObjectStoreImpl() override;
-
+    uint32_t Get(const std::string &objectId, DistributedObject *object) override;
     DistributedObject *CreateObject(const std::string &classPath, const std::string &objectId) override;
     uint32_t Sync(DistributedObject *object) override;
     uint32_t Delete(DistributedObject *object) override;

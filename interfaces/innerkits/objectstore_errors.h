@@ -38,6 +38,7 @@ constexpr uint32_t ERR_KEYVAL = BASE_ERR_OFFSET + 12;     // get key value faile
 constexpr uint32_t ERR_BYTE_SIZE = BASE_ERR_OFFSET + 13;     // get byte size failed
 constexpr uint32_t ERR_FLOAT_SIZE = BASE_ERR_OFFSET + 14;     // get float size failed
 constexpr uint32_t ERR_DOUBLE_SIZE = BASE_ERR_OFFSET + 15;     // get double size failed
+constexpr uint32_t ERR_GET_OBJECT = BASE_ERR_OFFSET + 16;     // get double size failed
 }  // namespace OHOS::ObjectStore
 
 #endif
