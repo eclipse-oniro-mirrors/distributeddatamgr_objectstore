@@ -120,6 +120,7 @@ uint32_t DistributedObjectStoreImpl::Get(const std::string &objectId, Distribute
             object = *iter;
             return SUCCESS;
         }
+        iter++;
     }
     LOG_ERROR("DistributedObjectStoreImpl::Get object err, no object");
     return ERR_GET_OBJECT;
