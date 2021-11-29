@@ -89,7 +89,7 @@ uint32_t FlatObjectStorageEngine::PutHash(const Key &key, const std::map<Field, 
     } else {
         result = fieldValues;
     }
-    hashDic_->insert_or_assign(key, fieldValues);
+    hashDic_->insert_or_assign(key, result);
     return SUCCESS;
 }
 

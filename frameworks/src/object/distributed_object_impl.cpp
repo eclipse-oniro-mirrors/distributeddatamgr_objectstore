@@ -204,10 +204,10 @@ uint32_t DistributedObjectImpl::GetChar(const std::string &key, char &value)
         return ret;
     }
     int16_t tmpVal;
-    uint32_t getRet = GetNum(data, sizeof(characterVal), &tmpVal, sizeof(tmpVal));
-    if (getRet != SUCCESS) {
-        LOG_ERROR("DistributedObjectImpl::GetChar getNum err.ret %d", getRet);
-        return getRet;
+    ret  = GetNum(data, sizeof(characterVal), &tmpVal, sizeof(tmpVal));
+    if (ret != SUCCESS) {
+        LOG_ERROR("DistributedObjectImpl::GetChar getNum err.ret %d", ret);
+        return ret;
     }
     value = tmpVal;
     return SUCCESS;
@@ -227,12 +227,11 @@ uint32_t DistributedObjectImpl::GetInt(const std::string &key, int32_t &value)
         LOG_ERROR("DistributedObjectImpl:GetInt field not exist. %d %s", ret, key.c_str());
         return ret;
     }
-    uint32_t getRet = GetNum(data, sizeof(integerVal), &value, sizeof(value));
-    if (getRet != SUCCESS) {
-        LOG_ERROR("DistributedObjectImpl::GetInt getNum err.ret %d", getRet);
-        return getRet;
+    ret = GetNum(data, sizeof(integerVal), &value, sizeof(value));
+    if (ret != SUCCESS) {
+        LOG_ERROR("DistributedObjectImpl::GetInt getNum err.ret %d", ret);
     }
-    return SUCCESS;
+    return ret;
 }
 
 uint32_t DistributedObjectImpl::GetShort(const std::string &key, int16_t &value)
@@ -249,12 +248,11 @@ uint32_t DistributedObjectImpl::GetShort(const std::string &key, int16_t &value)
         LOG_ERROR("DistributedObjectImpl:GetShort field not exist. %d %s", ret, key.c_str());
         return ret;
     }
-    uint32_t getRet = GetNum(data, sizeof(shortVal), &value, sizeof(value));
-    if (getRet != SUCCESS) {
-        LOG_ERROR("DistributedObjectImpl::GetShort getNum err.ret %d", getRet);
-        return getRet;
+    ret = GetNum(data, sizeof(shortVal), &value, sizeof(value));
+    if (ret != SUCCESS) {
+        LOG_ERROR("DistributedObjectImpl::GetShort getNum err.ret %d", ret);
     }
-    return SUCCESS;
+    return ret;
 }
 
 uint32_t DistributedObjectImpl::GetLong(const std::string &key, int64_t &value)
@@ -271,12 +269,11 @@ uint32_t DistributedObjectImpl::GetLong(const std::string &key, int64_t &value)
         LOG_ERROR("DistributedObjectImpl:GetLong field not exist. %d %s", ret, key.c_str());
         return ret;
     }
-    uint32_t getRet = GetNum(data, sizeof(longVal), &value, sizeof(value));
-    if (getRet != SUCCESS) {
-        LOG_ERROR("DistributedObjectImpl::GetLong getNum err.ret %d", getRet);
-        return getRet;
+    ret = GetNum(data, sizeof(longVal), &value, sizeof(value));
+    if (ret != SUCCESS) {
+        LOG_ERROR("DistributedObjectImpl::GetLong getNum err.ret %d", ret);
     }
-    return SUCCESS;
+    return ret;
 }
 
 uint32_t DistributedObjectImpl::GetFloat(const std::string &key, float &value)
@@ -293,15 +290,11 @@ uint32_t DistributedObjectImpl::GetFloat(const std::string &key, float &value)
         LOG_ERROR("DistributedObjectImpl:GetFloat field not exist. %d %s", ret, key.c_str());
         return ret;
     }
-    if (data.size() != sizeof(value)) {
-        LOG_ERROR("DistributedObjectImpl:GetFloat size err.");
-        return ERR_FLOAT_SIZE;
+    ret = GetNum(data, sizeof(floatVal), &value, sizeof(value));
+    if (ret != SUCCESS) {
+        LOG_ERROR("DistributedObjectImpl::GetFloat getNum err.ret %d", ret);
     }
-    uint32_t getRet = GetNum(data, sizeof(floatVal), &value, sizeof(value));
-    if (getRet != SUCCESS) {
-        LOG_ERROR("DistributedObjectImpl::GetFloat getNum err.ret %d", getRet);
-    }
-    return SUCCESS;
+    return ret;
 }
 
 uint32_t DistributedObjectImpl::GetDouble(const std::string &key, double &value)
@@ -318,15 +311,11 @@ uint32_t DistributedObjectImpl::GetDouble(const std::string &key, double &value)
         LOG_ERROR("DistributedObjectImpl:GetDouble field not exist. %d %s", ret, key.c_str());
         return ret;
     }
-    if (data.size() != sizeof(value)) {
-        LOG_ERROR("DistributedObjectImpl:GetDouble size err.");
-        return ERR_DOUBLE_SIZE;
+    ret = GetNum(data, sizeof(doubleVal), &value, sizeof(value));
+    if (ret != SUCCESS) {
+        LOG_ERROR("DistributedObjectImpl::GetDouble getNum err.ret %d", ret);
     }
-    uint32_t getRet = GetNum(data, sizeof(doubleVal), &value, sizeof(value));
-    if (getRet != SUCCESS) {
-        LOG_ERROR("DistributedObjectImpl::GetDouble getNum err.ret %d", getRet);
-    }
-    return SUCCESS;
+    return ret;
 }
 
 uint32_t DistributedObjectImpl::GetBoolean(const std::string &key, bool &value)
@@ -344,10 +333,10 @@ uint32_t DistributedObjectImpl::GetBoolean(const std::string &key, bool &value)
         LOG_ERROR("DistributedObjectImpl:GetBoolean field not exist. %d %s", ret, key.c_str());
         return ret;
     }
-    uint32_t getRet = GetNum(data, sizeof(booleanVal), &flag, sizeof(flag));
-    if (getRet != SUCCESS) {
-        LOG_ERROR("DistributedObjectImpl::GetBoolean getNum err.ret %d", getRet);
-        return getRet;
+    ret = GetNum(data, sizeof(booleanVal), &flag, sizeof(flag));
+    if (ret != SUCCESS) {
+        LOG_ERROR("DistributedObjectImpl::GetBoolean getNum err.ret %d", ret);
+        return ret;
     }
     value = flag == 0 ? false : true;
     return SUCCESS;
@@ -367,10 +356,6 @@ uint32_t DistributedObjectImpl::GetByte(const std::string &key, int8_t &value)
         LOG_ERROR("DistributedObjectImpl:GetByte field not exist. %d %s", ret, key.c_str());
         return ret;
     }
-    if (data.size() != sizeof(value)) {
-        LOG_ERROR("DistributedObjectImpl:GetByte size err.");
-        return ERR_BYTE_SIZE;
-    }
     value = data[0];
     return SUCCESS;
 }
@@ -389,12 +374,11 @@ uint32_t DistributedObjectImpl::GetString(const std::string &key, std::string &v
         LOG_ERROR("DistributedObjectImpl:GetString field not exist. %d %s", ret, key.c_str());
         return ret;
     }
-    uint32_t getRet = StringUtils::BytesToString(data, value);
-    if (getRet != SUCCESS) {
-        LOG_ERROR("DistributedObjectImpl::GetString dataToVal err.ret %d", getRet);
-        return getRet;
+    ret = StringUtils::BytesToString(data, value);
+    if (ret != SUCCESS) {
+        LOG_ERROR("DistributedObjectImpl::GetString dataToVal err.ret %d", ret);
     }
-    return SUCCESS;
+    return ret;
 }
 
 uint32_t DistributedObjectImpl::GetObjectId(std::string &objectId)
@@ -402,33 +386,16 @@ uint32_t DistributedObjectImpl::GetObjectId(std::string &objectId)
     uint32_t ret = StringUtils::BytesToString(flatObject_->GetId(), objectId);
     if (ret != SUCCESS) {
         LOG_ERROR("DistributedObjectImpl::GetObjectId bytesToString err.ret %d", ret);
-        return ret;
     }
-    return SUCCESS;
+    return ret;
 }
 
 uint32_t DistributedObjectImpl::UpdateObject()
 {
-    std::string id;
-    StringUtils::BytesToString(flatObject_->GetId(), id);
     int32_t ret = flatObjectStore_->Get(flatObject_->GetId(), *flatObject_);
     if (ret != SUCCESS) {
         LOG_ERROR("DistributedObjectImpl:UpdateObject err, ret %d", ret);
         return ret;
-    }
-    std::map<Bytes, Bytes> fields = flatObject_->GetFields();
-    auto iter = fields.begin();
-    std::string key;
-    std::string value;
-    uint32_t keyRet = StringUtils::BytesToString(iter->first, key);
-    if (keyRet != SUCCESS) {
-        LOG_ERROR("DistributedObjectImpl:UpdateObject keyToStr err ,ret %d", keyRet);
-        return keyRet;
-    }
-    uint32_t valRet = StringUtils::BytesToString(iter->second, value);
-    if (valRet != SUCCESS) {
-        LOG_ERROR("DistributedObjectImpl:UpdateObject valToStr err ,ret %d", valRet);
-        return valRet;
     }
     LOG_INFO("DistributedObjectImpl:update object success.");
     return SUCCESS;

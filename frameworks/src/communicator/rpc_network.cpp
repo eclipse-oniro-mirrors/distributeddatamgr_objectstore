@@ -72,7 +72,13 @@ int32_t RPCNetwork::OpenSession(const std::string &networkId)
     std::unique_lock<std::mutex> sessionLock(session->sessionMutex);
     session->connectStatus_ = CONNECTING;
     session->waitCount++;
-    dataManager_.OpenSoftbusLink(networkId);
+    uint32_t ret = dataManager_.OpenSoftbusLink(networkId);
+    if (ret != SUCCESS) {
+        LOG_INFO("RPCNetwork-%s,OpenSessionFail %d", __func__, ret);
+        session->waitCount--;
+        session->connectStatus_ = CONNECT_FAIL;
+        return -1;
+    }
     if (session->connectStatus_ == CONNCET) {
         session->waitCount--;
         return 0;
@@ -153,7 +159,7 @@ void RPCNetwork::OnMessageReceived(const std::string &deviceId, const char *data
         LOG_ERROR("RPCNetworkService-%s: fail to create session", __func__);
         return;
     }
-    ReceiveData(session, 0);
+    ReceiveData(deviceId, session, 0);
     return;
 }
 
