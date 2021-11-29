@@ -99,7 +99,7 @@ uint32_t Network::FindNetworkIdFromLocal(const device_t &deviceId, std::string &
     return ERR_NETWORK;
 }
 
-bool Network::ReceiveData(std::shared_ptr<CommunicatorSession> &session, uint32_t status)
+bool Network::ReceiveData(const std::string &deviceId, std::shared_ptr<CommunicatorSession> &session, uint32_t status)
 {
     if (session == nullptr) {
         LOG_ERROR("Network-%s: Data is available but session is null", __func__);
@@ -111,6 +111,7 @@ bool Network::ReceiveData(std::shared_ptr<CommunicatorSession> &session, uint32_
         return false;
     }
     for (auto &message : messages) {
+        message->SetSource(deviceId);
         LOG_DEBUG("Network-%s:Received message (%d: %d)", __func__, message->GetId(),
                   static_cast<uint8_t>(message->GetType()));
         if (observer_ != nullptr) {
