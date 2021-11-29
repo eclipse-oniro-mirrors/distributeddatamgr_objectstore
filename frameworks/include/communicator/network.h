@@ -74,7 +74,7 @@ protected:
     uint32_t GetDeviceNetworkId(const device_t &deviceId, std::string &networkId);
     uint32_t FindNetworkIdFromLocal(const device_t &deviceId, std::string &networkId);
     void UpdateNetworkId(const device_t &deviceId);
-    bool ReceiveData(std::shared_ptr<CommunicatorSession> &session, uint32_t status);
+    bool ReceiveData(const std::string &deviceId, std::shared_ptr<CommunicatorSession> &session, uint32_t status);
     bool ReadMessageFromSession(std::shared_ptr<CommunicatorSession> &session,
         std::vector<std::shared_ptr<Message>> &messages);
     DataBuffer *GetSessionDataBuffer();
