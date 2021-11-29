@@ -207,9 +207,10 @@ uint32_t DistributedObjectImpl::GetChar(const std::string &key, char &value)
     ret  = GetNum(data, sizeof(characterVal), &tmpVal, sizeof(tmpVal));
     if (ret != SUCCESS) {
         LOG_ERROR("DistributedObjectImpl::GetChar getNum err.ret %d", ret);
+        return ret;
     }
     value = tmpVal;
-    return ret;
+    return SUCCESS;
 }
 
 uint32_t DistributedObjectImpl::GetInt(const std::string &key, int32_t &value)
