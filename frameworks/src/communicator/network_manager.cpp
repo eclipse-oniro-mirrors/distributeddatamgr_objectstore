@@ -19,10 +19,6 @@
 #include "softbus_bus_center.h"
 
 namespace OHOS::ObjectStore {
-namespace {
-    static constexpr int32_t ID_BUF_LEN = 65;
-}  // namespace
-
 uint32_t NetworkManager::Init()
 {
     return InitLocalDeviceId();

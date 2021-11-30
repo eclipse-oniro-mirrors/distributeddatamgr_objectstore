@@ -22,13 +22,7 @@
 
 namespace OHOS::ObjectStore {
 namespace {
-constexpr static uint32_t WAIT_TIME_OUT = 400;
 constexpr static uint32_t THREAD_NUM = 3;               // 3: thread pool size
-constexpr static uint32_t SHANKE_RETRY_LIMIT = 3;       // 3: retry times
-constexpr static uint32_t SHANKE_HANDE_WAIT_TIME = 10;  // 10: wait 10 milliseconds
-static constexpr int32_t ID_BUF_LEN = 65;
-
-static constexpr const char *SESSION_NAME = "objectstore";
 };                                                      // namespace
 Network::Network(const std::string &name, const device_t &local, NetworkObserver *observer)
     : networkName_(name), observer_(observer)
@@ -79,7 +73,6 @@ uint32_t Network::GetDeviceNetworkId(const device_t &deviceId, std::string &netw
     if (ret == SUCCESS) {
         return ret;
     }
-    UpdateNetworkId(deviceId);
     ret = FindNetworkIdFromLocal(deviceId, networkId);
     if (ret == SUCCESS) {
         return ret;
