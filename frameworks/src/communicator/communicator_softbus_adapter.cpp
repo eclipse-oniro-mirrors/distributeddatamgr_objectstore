@@ -66,12 +66,8 @@ uint32_t CommunicatorSoftbusAdapter::OpenSoftbusLink(const std::string &networkI
     {
         std::unique_lock<std::mutex> sessionLock(operationMutex_);
         if (sessionDevDic_.count(networkId) != 0) {
-            if (networkListener_ != nullptr && networkListener_->GetSessionListener() != nullptr
-                && networkListener_->GetSessionListener()->OnSessionOpened != nullptr) {
-                networkListener_->GetSessionListener()->OnSessionOpened(sessionDevDic_[networkId], SUCCESS);
-            }
             LOG_INFO("has opened %s", networkId.c_str());
-            return SUCCESS;
+            return ERR_OPENSESSION_REPEAT;
         }
     }
     int32_t sessionId;
@@ -79,10 +75,6 @@ uint32_t CommunicatorSoftbusAdapter::OpenSoftbusLink(const std::string &networkI
     sessionId = OpenSession(SESSION_NAME, SESSION_NAME, networkId.c_str(), GROUP_ID, &g_sessionAttr);
     if (sessionId < 0) {
         LOG_ERROR("OpenSession failed %d", sessionId);
-        if (networkListener_ != nullptr && networkListener_->GetSessionListener() != nullptr
-            && networkListener_->GetSessionListener()->OnSessionOpened != nullptr) {
-            networkListener_->GetSessionListener()->OnSessionOpened(sessionDevDic_[networkId], ERR_OPENSESSION);
-        }
         return ERR_OPENSESSION;
     }
     {
@@ -90,6 +82,15 @@ uint32_t CommunicatorSoftbusAdapter::OpenSoftbusLink(const std::string &networkI
         sessionDevDic_[networkId] = sessionId;
     }
     LOG_INFO("OpenSession success");
+    return SUCCESS;
+}
+
+uint32_t CommunicatorSoftbusAdapter::CloseSoftbusLink(const std::string &networkId)
+{
+    std::unique_lock<std::mutex> sessionLock(operationMutex_);
+    if (sessionDevDic_.count(networkId) != 0) {
+        sessionDevDic_.erase(networkId);
+    }
     return SUCCESS;
 }
 

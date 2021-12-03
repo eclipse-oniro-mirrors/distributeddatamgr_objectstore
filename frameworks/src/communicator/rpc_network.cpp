@@ -148,7 +148,8 @@ void RPCNetwork::OnSessionClosed(const std::string &deviceId)
     sessionInfo->connectStatus_ = DISCONNECT;
     sessionInfo->CV.notify_one();
     HandleSessionDisConnected(deviceId);
-    LOG_INFO("RPCNetwork-%s:OnSessionClosed", __func__);
+    dataManager_.CloseSoftbusLink(deviceId);
+    LOG_INFO("RPCNetwork-%s:OnSessionClosed end", __func__);
     return;
 }
 
