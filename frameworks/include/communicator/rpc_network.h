@@ -28,7 +28,6 @@ enum DeviceStatus {
 };
 
 struct SessionInfo {
-    uint32_t waitCount { 0 };
     std::mutex sessionMutex {};
     std::condition_variable CV {};
     enum DeviceStatus connectStatus_ {DISCONNECT};

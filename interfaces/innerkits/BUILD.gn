@@ -41,52 +41,48 @@ config("objectstore_config") {
 config("objectstore_public_config") {
   visibility = [ "//foundation/distributeddatamgr/objectstore:*" ]
 
-  include_dirs = [
-    ".",
-  ]
+  include_dirs = [ "." ]
 }
 
 ohos_shared_library("objectstore_inner") {
   part_name = "objectstore"
   sources = [
-   "../../frameworks/src/common/object_utils.cpp",
-   "../../frameworks/src/common/thread_pool.cpp",
-   "../../frameworks/src/communicator/communicator.cpp",
-   "../../frameworks/src/communicator/communicator_softbus_adapter.cpp",
-   "../../frameworks/src/communicator/network.cpp",
-   "../../frameworks/src/communicator/network_manager.cpp",
-   "../../frameworks/src/communicator/rpc_network.cpp",
-   "../../frameworks/src/communicator/rpc_session.cpp",
-   "../../frameworks/src/coordinator/coordinate_engine.cpp",
-   "../../frameworks/src/coordinator/local_object_task.cpp",
-   "../../frameworks/src/coordinator/local_observers.cpp",
-   "../../frameworks/src/coordinator/message_decoder.cpp",
-   "../../frameworks/src/coordinator/object_task_manager.cpp",
-   "../../frameworks/src/coordinator/observer_manager.cpp",
-   "../../frameworks/src/coordinator/operation.cpp",
-   "../../frameworks/src/coordinator/operation_dispatcher.cpp",
-   "../../frameworks/src/coordinator/remote_object_task.cpp",
-   "../../frameworks/src/coordinator/remote_observers.cpp",
-   "../../frameworks/src/object/distributed_object_impl.cpp",
-   "../../frameworks/src/object/distributed_object_store_impl.cpp",
-   "../../frameworks/src/object/distributed_objectstore_manager.cpp",
-   "../../frameworks/src/object/distributed_objectstore_manager_impl.cpp",
-   "../../frameworks/src/object/flat_object.cpp",
-   "../../frameworks/src/object/flat_object_store.cpp",
-   "../../frameworks/src/object/object_coordinator.cpp",
-   "../../frameworks/src/object/object_store_executor.cpp",
-   "../../frameworks/src/object/object_store_manager.cpp",
-   "../../frameworks/src/storage/flat_object_storage_engine.cpp",
+    "../../frameworks/src/common/object_utils.cpp",
+    "../../frameworks/src/common/thread_pool.cpp",
+    "../../frameworks/src/communicator/communicator.cpp",
+    "../../frameworks/src/communicator/communicator_softbus_adapter.cpp",
+    "../../frameworks/src/communicator/network.cpp",
+    "../../frameworks/src/communicator/network_manager.cpp",
+    "../../frameworks/src/communicator/rpc_network.cpp",
+    "../../frameworks/src/communicator/rpc_session.cpp",
+    "../../frameworks/src/coordinator/coordinate_engine.cpp",
+    "../../frameworks/src/coordinator/local_object_task.cpp",
+    "../../frameworks/src/coordinator/local_observers.cpp",
+    "../../frameworks/src/coordinator/message_decoder.cpp",
+    "../../frameworks/src/coordinator/object_task_manager.cpp",
+    "../../frameworks/src/coordinator/observer_manager.cpp",
+    "../../frameworks/src/coordinator/operation.cpp",
+    "../../frameworks/src/coordinator/operation_dispatcher.cpp",
+    "../../frameworks/src/coordinator/remote_object_task.cpp",
+    "../../frameworks/src/coordinator/remote_observers.cpp",
+    "../../frameworks/src/object/distributed_object_impl.cpp",
+    "../../frameworks/src/object/distributed_object_store_impl.cpp",
+    "../../frameworks/src/object/distributed_objectstore_manager.cpp",
+    "../../frameworks/src/object/distributed_objectstore_manager_impl.cpp",
+    "../../frameworks/src/object/flat_object.cpp",
+    "../../frameworks/src/object/flat_object_store.cpp",
+    "../../frameworks/src/object/object_coordinator.cpp",
+    "../../frameworks/src/object/object_store_executor.cpp",
+    "../../frameworks/src/object/object_store_manager.cpp",
+    "../../frameworks/src/storage/flat_object_storage_engine.cpp",
   ]
 
   configs = [ ":objectstore_config" ]
 
-  deps = [
-    "//utils/native/base:utils",
-  ]
+  deps = [ "//utils/native/base:utils" ]
   external_deps = [
-    "hiviewdfx_hilog_native:libhilog",
     "dsoftbus_standard:softbus_client",
+    "hiviewdfx_hilog_native:libhilog",
     "samgr_standard:samgr_proxy",
   ]
 
