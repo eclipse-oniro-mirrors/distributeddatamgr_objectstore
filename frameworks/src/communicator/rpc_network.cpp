@@ -71,26 +71,25 @@ int32_t RPCNetwork::OpenSession(const std::string &networkId)
     }
     std::unique_lock<std::mutex> sessionLock(session->sessionMutex);
     session->connectStatus_ = CONNECTING;
-    session->waitCount++;
+    sessionLock.unlock();
     uint32_t ret = dataManager_.OpenSoftbusLink(networkId);
+    sessionLock.lock();
     if (ret != SUCCESS) {
         LOG_INFO("RPCNetwork-%s,OpenSessionFail %d", __func__, ret);
-        session->waitCount--;
         session->connectStatus_ = CONNECT_FAIL;
         return -1;
     }
     if (session->connectStatus_ == CONNCET) {
-        session->waitCount--;
+        LOG_INFO("RPCNetwork-%s,connect success", __func__);
         return 0;
     }
+    LOG_INFO("RPCNetwork-%s, start wait,%s", __func__, networkId.c_str());
     if (session->CV.wait_for(sessionLock, std::chrono::milliseconds(OPEN_SESSION_TIMEOUT)) ==
         std::cv_status::timeout) {
         LOG_INFO("RPCNetwork-%s,Open session timeout", __func__);
-        session->waitCount--;
         HandleSessionDisConnected(networkId);
         return -1;
     }
-    session->waitCount--;
     LOG_INFO("RPCNetwork-%s, Open proxy success", __func__);
     return session->connectStatus_ == CONNCET ? 0 : -1;
 }
@@ -148,7 +147,8 @@ void RPCNetwork::OnSessionClosed(const std::string &deviceId)
     sessionInfo->connectStatus_ = DISCONNECT;
     sessionInfo->CV.notify_one();
     HandleSessionDisConnected(deviceId);
-    LOG_INFO("RPCNetwork-%s:OnSessionClosed", __func__);
+    dataManager_.CloseSoftbusLink(deviceId);
+    LOG_INFO("RPCNetwork-%s:OnSessionClosed end", __func__);
     return;
 }
 
