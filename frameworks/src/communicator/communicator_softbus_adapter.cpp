@@ -87,10 +87,12 @@ uint32_t CommunicatorSoftbusAdapter::OpenSoftbusLink(const std::string &networkI
 
 uint32_t CommunicatorSoftbusAdapter::CloseSoftbusLink(const std::string &networkId)
 {
+    LOG_INFO("CloseSoftbusLink start");
     std::unique_lock<std::mutex> sessionLock(operationMutex_);
     if (sessionDevDic_.count(networkId) != 0) {
         sessionDevDic_.erase(networkId);
     }
+    LOG_INFO("CloseSoftbusLink end %s", networkId.c_str());
     return SUCCESS;
 }
 
