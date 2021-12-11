@@ -25,13 +25,13 @@ namespace OHOS::ObjectStore {
 class DistributedObjectStore {
 public:
     virtual ~DistributedObjectStore() {};
-    virtual DistributedObject *CreateObject(const std::string &classPath, const std::string &key) = 0;
-    virtual uint32_t Get(const std::string &objectId, DistributedObject *object) = 0;
+    static DistributedObjectStore *GetInstance();
+    virtual DistributedObject *CreateObject(const std::string &sessionId) = 0;
+    virtual uint32_t Get(const std::string &sessionId, DistributedObject *object) = 0;
     virtual uint32_t Sync(DistributedObject *object) = 0;
-    virtual uint32_t Delete(DistributedObject *object) = 0;
+    virtual uint32_t DeleteObject(const std::string &sessionId) = 0;
     virtual uint32_t Watch(DistributedObject *object, std::shared_ptr<ObjectWatcher> objectWatcher) = 0;
     virtual uint32_t UnWatch(DistributedObject *object) = 0;
-    virtual void Close() = 0;
 };
 }
 

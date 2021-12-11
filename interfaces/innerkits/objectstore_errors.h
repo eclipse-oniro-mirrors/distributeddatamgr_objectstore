@@ -23,8 +23,8 @@ constexpr uint32_t BASE_ERR_OFFSET = 1650;
 
 /* module defined errors */
 constexpr uint32_t SUCCESS = 0;                              // Operation succeed
-constexpr uint32_t ERR_INVAL = BASE_ERR_OFFSET + 1;          // Invalid argument
-constexpr uint32_t ERR_NOMEM = BASE_ERR_OFFSET + 2;          // Out of memory
+constexpr uint32_t ERR_STORE_MANAGER_NULL = BASE_ERR_OFFSET + 1;          // Invalid argument
+constexpr uint32_t ERR_CREATE_FAIL = BASE_ERR_OFFSET + 2;          // Out of memory
 constexpr uint32_t ERR_DB_NOT_INIT = BASE_ERR_OFFSET + 3;    // Database not init
 constexpr uint32_t ERR_NETWORK = BASE_ERR_OFFSET + 4;       // Network error
 constexpr uint32_t ERR_OPENSESSION = BASE_ERR_OFFSET + 5;   // Open session fail

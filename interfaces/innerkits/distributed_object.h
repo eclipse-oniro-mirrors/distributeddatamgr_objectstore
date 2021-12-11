@@ -18,6 +18,7 @@
 #include <string>
 #include <vector>
 #include <memory>
+#include <map>
 
 namespace OHOS::ObjectStore {
 class DistributedObject {
@@ -46,8 +47,8 @@ public:
 
 class ObjectWatcher {
 public:
-    virtual void OnChanged(const std::string &id) = 0;
-    virtual void OnDeleted(const std::string &id) = 0;
+    virtual void OnChanged(const std::string &sessionid, const std::vector<const std::string>& changedData) = 0;
+    virtual void OnDeleted(const std::string &sessionid) = 0;
 };
 }  // namespace OHOS
 #endif // DISTRIBUTED_OBJECT_H
