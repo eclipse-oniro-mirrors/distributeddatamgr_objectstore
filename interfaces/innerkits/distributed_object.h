@@ -21,6 +21,9 @@
 #include <map>
 
 namespace OHOS::ObjectStore {
+enum Type:uint8_t {
+
+};
 class DistributedObject {
 public:
     virtual ~DistributedObject() {};
@@ -42,6 +45,7 @@ public:
     virtual uint32_t GetBoolean(const std::string &key, bool &value) = 0;
     virtual uint32_t GetString(const std::string &key, std::string &value) = 0;
     virtual uint32_t GetByte(const std::string &key, int8_t &value) = 0;
+    virtual uint32_t GetType(const std::string &key, Type &type) = 0;
     virtual uint32_t GetObjectId(std::string &objectId) = 0;
 };
 

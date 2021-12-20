@@ -23,15 +23,8 @@ import { AsyncCallback, Callback } from './basic';
  * @devices phone, tablet
  */
 declare namespace distributedobjectstore {
-    function createObjectSync(sessionId: string): DistributedObject;
-    function createObject(sessionId: string, callback: AsyncCallback<DistributedObject>): void;
-    function createObject(sessionId: string): Promise<DistributedObject>;
-
-    function destroyObjectSync(sessionId: string): number;
-    function destroyObject(sessionId: string, callback: AsyncCallback<void>): void;
-    function destroyObject(sessionId: string): Promise<void>;
-
-    function sync(object: DistributedObject): number;
+    function joinSession(obj: object, sessionId: string): DistributedObject;
+    function leaveSession(obj: DistributedObject): object;
     function on(type: 'change', object: DistributedObject, callback: Callback<ChangedDataObserver>): void;
     function off(type: 'change', object: DistributedObject, callback?: Callback<ChangedDataObserver>): void;
     function on(type: 'status', object: DistributedObject, callback: Callback<ObjectStatusObserver>): void;
@@ -39,7 +32,7 @@ declare namespace distributedobjectstore {
 
 
     type ValueType = number | string | boolean | object;
-    interface DistributedObject {
+    class DistributedObject {
         put(key: string, value: ValueType): void;
         get(key: string): ValueType;
     }
@@ -56,4 +49,4 @@ declare namespace distributedobjectstore {
     }
 }
 
-export default distributeddataobject;
+export default distributedobjectstore;

@@ -17,26 +17,25 @@
 #define OBJECT_STORE_LOGGER_H
 #include <memory>
 #include <atomic>
-
 #ifdef HILOG_ENABLE
 #include "hilog/log.h"
 namespace OHOS::ObjectStore {
-static const OHOS::HiviewDFX::HiLogLabel LABEL = { LOG_CORE, 0xD001650, "ObjectStore-x1206" };
+static const OHOS::HiviewDFX::HiLogLabel LABEL = { LOG_CORE, 0xD001650, "ObjectStore-x" };
 
-#define LOG_DEBUG(...) ((void)OHOS::HiviewDFX::HiLog::Debug(LABEL, __VA_ARGS__))
-#define LOG_INFO(...) ((void)OHOS::HiviewDFX::HiLog::Info(LABEL, __VA_ARGS__))
-#define LOG_WARN(...) ((void)OHOS::HiviewDFX::HiLog::Warn(LABEL, __VA_ARGS__))
-#define LOG_ERROR(...) ((void)OHOS::HiviewDFX::HiLog::Error(LABEL, __VA_ARGS__))
-#define LOG_FATAL(...) ((void)OHOS::HiviewDFX::HiLog::Fatal(LABEL, __VA_ARGS__))
+#define LOG_DEBUG(fmt, ...) ((void)OHOS::HiviewDFX::HiLog::Debug(LABEL, "%{public}d: %{public}s " fmt " ", __LINE__, __FUNCTION__, ##__VA_ARGS__))
+#define LOG_INFO(fmt, ...) ((void)OHOS::HiviewDFX::HiLog::Info(LABEL, "%{public}d: %{public}s " fmt " ", __LINE__, __FUNCTION__, ##__VA_ARGS__))
+#define LOG_WARN(fmt, ...) ((void)OHOS::HiviewDFX::HiLog::Warn(LABEL, "%{public}d: %{public}s " fmt " ", __LINE__, __FUNCTION__, ##__VA_ARGS__))
+#define LOG_ERROR(fmt, ...) ((void)OHOS::HiviewDFX::HiLog::Error(LABEL, "%{public}d: %{public}s " fmt " ", __LINE__, __FUNCTION__, ##__VA_ARGS__))
+#define LOG_FATAL(fmt, ...) ((void)OHOS::HiviewDFX::HiLog::Fatal(LABEL, "%{public}d: %{public}s " fmt " ", __LINE__, __FUNCTION__, ##__VA_ARGS__))
 
 }  // namespace OHOS::ObjectStore
 #else
 #include <stdio.h>
 #include <stdlib.h>
 
-#define LOG_DEBUG(fmt, ...) printf("[D][ObjectStore]%s: " fmt "\n", __FUNCTION__, ##__VA_ARGS__)
-#define LOG_ERROR(fmt, ...) printf("[E][ObjectStore]%s: " fmt "\n", __FUNCTION__, ##__VA_ARGS__)
-#define LOG_INFO(fmt, ...) printf("[I][ObjectStore]%s: " fmt "\n", __FUNCTION__, ##__VA_ARGS__)
-#define LOG_WARN(fmt, ...) printf("[W][ObjectStore]%s: " fmt "\n", __FUNCTION__, ##__VA_ARGS__)
+#define LOG_DEBUG(fmt, ...) printf("[D][ObjectStore]%s:%d %s: " fmt "\n", __FILE__, __LINE__, __FUNCTION__, ##__VA_ARGS__)
+#define LOG_ERROR(fmt, ...) printf("[E][ObjectStore]%s:%d %s: " fmt "\n", __FILE__, __LINE__, __FUNCTION__, ##__VA_ARGS__)
+#define LOG_INFO(fmt, ...) printf("[I][ObjectStore]%s:%d %s: " fmt "\n", __FILE__, __LINE__, __FUNCTION__, ##__VA_ARGS__)
+#define LOG_WARN(fmt, ...) printf("[W][ObjectStore]%s:%d %s: " fmt "\n", __FILE__, __LINE__, __FUNCTION__, ##__VA_ARGS__)
 #endif // #ifdef HILOG_ENABLE
 #endif // OBJECT_STORE_LOGGER_H

@@ -14,54 +14,46 @@
  */
 
 #include "distributed_objectstore.h"
-#include "native_api.h"
-#include "native_node_api.h"
-#include "objectstore_errors.h"
+#include "napi/native_api.h"
+#include "napi/native_node_api.h"
 #include <js_object_wrapper.h>
 #include <js_distributedobject.h>
 #include <js_distributedobjectstore.h>
+#include <logger.h>
+#include <js_common.h>
+#include <objectstore_errors.h>
 
 
 namespace OHOS::ObjectStore {
-constexpr size_t SESSION_ID_SIZE = 32;
 constexpr size_t TYPE_SIZE = 10;
-struct DistributedObjectContext {
-    DistributedObjectStore *objectInfo = nullptr;
-};
-struct CreateObjectAsyncContext {
-    napi_env env = nullptr;
-    napi_async_work work = nullptr;
-    napi_deferred deferred = nullptr;
-    napi_ref callbackRef = nullptr;
-    char sessionId[SESSION_ID_SIZE] = { 0 };
-    size_t sessionIdLen = 0;
-    int32_t status = 0;
-    DistributedObjectStore *objectStore;
-    DistributedObject *object;
-
-};
-napi_value JSDistributedObjectStore::JSConstructor(napi_env env, napi_callback_info info)
+napi_value JSDistributedObjectStore::NewDistributedObject(napi_env env, DistributedObjectStore *objectStore, DistributedObject *object)
 {
-    napi_value thisVar = nullptr;
-    void* data = nullptr;
-    napi_get_cb_info(env, info, nullptr, nullptr, &thisVar, &data);
+    /* napi_status status = napi_get_instance_data(env, &instance_data);
+    CHECK_EQUAL_WITH_RETURN_NULL(status, napi_ok) */;
+    napi_ref *instance = g_instance;
+    ASSERT_MATCH_ELSE_RETURN_NULL(instance != nullptr);
+    napi_value constructor, result;
+    napi_status status = napi_get_reference_value(env, *instance, &constructor);
+    CHECK_EQUAL_WITH_RETURN_NULL(status, napi_ok);
+    napi_value argv;
+    size_t argc = 1;
+    status = napi_create_object(env, &argv);
+    CHECK_EQUAL_WITH_RETURN_NULL(status, napi_ok);
+    ConstructContext *context = new ConstructContext();
+    context->objectStore = objectStore;
+    context->object = object;
+    status = napi_wrap(env, argv, &context, [](napi_env env, void* finalize_data, void* finalize_hint) {
+           auto context = (ConstructContext*)finalize_data;
+           if (context != nullptr) {
+               delete context;
+           }
+        }, nullptr,nullptr);
+    CHECK_EQUAL_WITH_RETURN_NULL(status, napi_ok);
 
-    DistributedObjectStore *objectInfo = DistributedObjectStore::GetInstance();
-    DistributedObjectContext *context = new DistributedObjectContext();
-    context->objectInfo = objectInfo;
-    napi_wrap(
-            env, thisVar, context,
-            [](napi_env env, void* data, void* hint) {
-                auto context = (DistributedObjectContext*)data;
-                if (context != nullptr) {
-                    delete context;
-                }
-            },
-            nullptr, nullptr);
-
-    return thisVar;
+    status = napi_new_instance(env, constructor, argc, &argv, &result);
+    CHECK_EQUAL_WITH_RETURN_NULL(status, napi_ok);
+    return result;
 }
-
 // function createObject(sessionId: string, callback: AsyncCallback<DistributedObject>): void;
 // function createObject(sessionId: string): Promise<DistributedObject>;
 napi_value JSDistributedObjectStore::JSCreateObject(napi_env env, napi_callback_info info)
@@ -95,10 +87,7 @@ napi_value JSDistributedObjectStore::JSCreateObject(napi_env env, napi_callback_
     } else {
         napi_get_undefined(env, &result);
     }
-    DistributedObjectContext *context = nullptr;
-    napi_unwrap(env, thisVar, (void**)&context);
-    NAPI_ASSERT(env, context != nullptr, "context is null");
-    asyncContext->objectStore = context->objectInfo;
+    asyncContext->objectStore = DistributedObjectStore::GetInstance();
     napi_value resource = nullptr;
     napi_create_string_utf8(env, "JSCreateObject", NAPI_AUTO_LENGTH, &resource);
 
@@ -118,17 +107,12 @@ napi_value JSDistributedObjectStore::JSCreateObject(napi_env env, napi_callback_
                 napi_value result[2] = { 0 };
                 napi_create_int32(env, asyncContext->status, &result[0]);
                 if (asyncContext->status == SUCCESS) {
-                    JSObjectWrapper *objectWrapper = new JSObjectWrapper(asyncContext->objectStore, asyncContext->object);
-                    napi_wrap( env, result[1], objectWrapper,
-                               [](napi_env env, void* data, void* hint) {
-                                   auto objectWrapper = (JSObjectWrapper*)data;
-                                   if (objectWrapper != nullptr) {
-                                       delete objectWrapper;
-                                   }
-                               },
-                               nullptr, nullptr);
+                    result[1] = NewDistributedObject(env, asyncContext->objectStore, asyncContext->object);
+                    if (result[1] == nullptr) {
+                        napi_get_null(env, &result[1]);
+                    }
                 } else {
-                    napi_get_undefined(env, &result[1]);
+                    napi_get_null(env, &result[1]);
                     // todo callback create fail
                 }
                 if (asyncContext->deferred) {
@@ -154,6 +138,7 @@ napi_value JSDistributedObjectStore::JSCreateObject(napi_env env, napi_callback_
 //function createObjectSync(sessionId: string): DistributedObject;
 napi_value JSDistributedObjectStore::JSCreateObjectSync(napi_env env, napi_callback_info info)
 {
+    LOG_ERROR("hanlu start JSCreateObjectSync");
     size_t requireArgc = 1;
     size_t argc = 2;
     napi_value argv[2] = { 0 };
@@ -161,42 +146,29 @@ napi_value JSDistributedObjectStore::JSCreateObjectSync(napi_env env, napi_callb
     void* data = nullptr;
     char sessionId[SESSION_ID_SIZE] = { 0 };
     size_t sessionIdLen = 0;
-    napi_get_cb_info(env, info, &argc, argv, &thisVar, &data);
-
-    NAPI_ASSERT(env, argc >= requireArgc, "requires 1 parameter");
+    napi_status status = napi_get_cb_info(env, info, &argc, argv, &thisVar, &data);
+    CHECK_EQUAL_WITH_RETURN_NULL(status, napi_ok);
+    ASSERT_MATCH_ELSE_RETURN_NULL(argc >= requireArgc);
     for (size_t i = 0; i < argc; i++) {
         napi_valuetype valueType = napi_undefined;
-        napi_typeof(env, argv[i], &valueType);
+        status = napi_typeof(env, argv[i], &valueType);
+        CHECK_EQUAL_WITH_RETURN_NULL(status, napi_ok);
 
         if (i == 0 && valueType == napi_string) {
-            napi_get_value_string_utf8(env, argv[i], sessionId, SESSION_ID_SIZE, &sessionIdLen);
+            status = napi_get_value_string_utf8(env, argv[i], sessionId, SESSION_ID_SIZE, &sessionIdLen);
+            CHECK_EQUAL_WITH_RETURN_NULL(status, napi_ok);
         } else {
-            NAPI_ASSERT(env, false, "type mismatch");
+            LOG_ERROR("type dismatch");
+            return nullptr;
         }
     }
-    DistributedObjectContext *context = nullptr;
-    napi_unwrap(env, thisVar, (void**)&context);
-    NAPI_ASSERT(env, context != nullptr, "context is null");
-    DistributedObjectStore* objectInfo = context->objectInfo;
-    NAPI_ASSERT(env, objectInfo != nullptr, "objectInfo not null");
+    LOG_ERROR("hanlu start JSCreateObjectSync3");
+    DistributedObjectStore* objectInfo = DistributedObjectStore::GetInstance();
+    ASSERT_MATCH_ELSE_RETURN_NULL(objectInfo != nullptr);
     DistributedObject *object = objectInfo->CreateObject(sessionId);
-    napi_value result = nullptr;
-    if (object != nullptr) {
-        JSObjectWrapper *objectWrapper = new JSObjectWrapper(objectInfo, object);
-        napi_wrap( env, result, objectWrapper,
-                   [](napi_env env, void* data, void* hint) {
-                       auto objectWrapper = (JSObjectWrapper*)data;
-                       if (objectWrapper != nullptr) {
-                           delete objectWrapper;
-                       }
-                   },
-                   nullptr, nullptr);
-    } else {
-        // create fail
-        //todo callback
-        napi_get_undefined(env, &result);
-    }
-    return result;
+    LOG_ERROR("hanlu start JSCreateObjectSync4");
+    ASSERT_MATCH_ELSE_RETURN_NULL(object != nullptr);
+    return NewDistributedObject(env, objectInfo, object);
 }
 
 // function destroyObject(sessionId: string, callback: AsyncCallback<void>): void;
@@ -208,7 +180,8 @@ napi_value JSDistributedObjectStore::JSDestroyObject(napi_env env, napi_callback
     napi_value argv[3] = { 0 };
     napi_value thisVar = nullptr;
     void* data = nullptr;
-    napi_get_cb_info(env, info, &argc, argv, &thisVar, &data);
+    napi_status status = napi_get_cb_info(env, info, &argc, argv, &thisVar, &data);
+    CHECK_EQUAL_WITH_RETURN_NULL(status, napi_ok);
     NAPI_ASSERT(env, argc >= requireArgc, "requires 1 parameter");
     auto asyncContext = new CreateObjectAsyncContext();
     asyncContext->env = env;
@@ -232,10 +205,7 @@ napi_value JSDistributedObjectStore::JSDestroyObject(napi_env env, napi_callback
     } else {
         napi_get_undefined(env, &result);
     }
-    DistributedObjectContext *context = nullptr;
-    napi_unwrap(env, thisVar, (void**)&context);
-    NAPI_ASSERT(env, context != nullptr, "context is null");
-    asyncContext->objectStore = context->objectInfo;
+    asyncContext->objectStore = DistributedObjectStore::GetInstance();
     napi_value resource = nullptr;
     napi_create_string_utf8(env, "JSDestroyObject", NAPI_AUTO_LENGTH, &resource);
 
@@ -277,8 +247,8 @@ napi_value JSDistributedObjectStore::JSDestroyObject(napi_env env, napi_callback
 napi_value JSDistributedObjectStore::JSDestroyObjectSync(napi_env env, napi_callback_info info)
 {
     size_t requireArgc = 1;
-    size_t argc = 2;
-    napi_value argv[2] = { 0 };
+    size_t argc = 1;
+    napi_value argv[1] = { 0 };
     napi_value thisVar = nullptr;
     void* data = nullptr;
     char sessionId[SESSION_ID_SIZE] = { 0 };
@@ -296,10 +266,8 @@ napi_value JSDistributedObjectStore::JSDestroyObjectSync(napi_env env, napi_call
             NAPI_ASSERT(env, false, "type mismatch");
         }
     }
-    DistributedObjectContext *context = nullptr;
-    napi_unwrap(env, thisVar, (void**)&context);
-    NAPI_ASSERT(env, context != nullptr, "context is null");
-    DistributedObjectStore* objectInfo = context->objectInfo;
+
+    DistributedObjectStore* objectInfo = DistributedObjectStore::GetInstance();
     NAPI_ASSERT(env, objectInfo != nullptr, "objectInfo not null");
     uint32_t ret = objectInfo->DeleteObject(sessionId);
     napi_value result = nullptr;
@@ -321,10 +289,7 @@ napi_value JSDistributedObjectStore::JSSync(napi_env env, napi_callback_info inf
     NAPI_ASSERT(env, argc >= requireArgc, "requires 1 parameter");
     napi_unwrap(env, argv[0], (void**)&objectWrapper);
     NAPI_ASSERT(env, objectWrapper != nullptr, "objectWrapper not null");
-    DistributedObjectContext *context = nullptr;
-    napi_unwrap(env, thisVar, (void**)&context);
-    NAPI_ASSERT(env, context != nullptr, "context is null");
-    DistributedObjectStore *objectInfo = context->objectInfo;
+    DistributedObjectStore *objectInfo = DistributedObjectStore::GetInstance();
     NAPI_ASSERT(env, objectInfo != nullptr, "objectInfo not null");
     uint32_t ret = objectInfo->Sync(objectWrapper->GetObject());
     napi_value result = nullptr;
@@ -372,22 +337,25 @@ napi_value JSDistributedObjectStore::JSOn(napi_env env, napi_callback_info info)
 // function off(type: 'status', object: DistributedObject, callback?: Callback<ObjectStatusObserver>): void;
 napi_value JSDistributedObjectStore::JSOff(napi_env env, napi_callback_info info)
 {
-    size_t requireArgc = 2;
+    size_t requireArgc = 3;
     size_t argc = 0;
-    napi_value argv[2] = { 0 };
+    napi_value argv[3] = { 0 };
     napi_value thisVar = nullptr;
     void* data = nullptr;
     char type[TYPE_SIZE] = { 0 };
     size_t typeLen = 0;
-    napi_get_cb_info(env, info, &argc, argv, &thisVar, &data);
+    napi_status status = napi_get_cb_info(env, info, &argc, argv, &thisVar, &data);
+    CHECK_EQUAL_WITH_RETURN_NULL(status, napi_ok);
 
-    NAPI_ASSERT(env, argc >= requireArgc, "requires 1 parameter");
+    NAPI_ASSERT(env, argc >= requireArgc, "requires 3 parameter");
     for (size_t i = 0; i < argc; i++) {
         napi_valuetype valueType = napi_undefined;
-        napi_typeof(env, argv[i], &valueType);
+        status = napi_typeof(env, argv[i], &valueType);
+        CHECK_EQUAL_WITH_RETURN_NULL(status, napi_ok);
 
         if (i == 0 && valueType == napi_string) {
-            napi_get_value_string_utf8(env, argv[i], type, TYPE_SIZE, &typeLen);
+            status = napi_get_value_string_utf8(env, argv[i], type, TYPE_SIZE, &typeLen);
+            CHECK_EQUAL_WITH_RETURN_NULL(status, napi_ok);
         } else if (i == 1 && valueType == napi_object) {
             continue;
         } else if (i == 2 && (valueType == napi_function || valueType == napi_undefined)) {
@@ -397,7 +365,8 @@ napi_value JSDistributedObjectStore::JSOff(napi_env env, napi_callback_info info
         }
     }
     JSObjectWrapper *wrapper = nullptr;
-    napi_unwrap(env, argv[1], (void**)&wrapper);
+    status = napi_unwrap(env, argv[1], (void**)&wrapper);
+    CHECK_EQUAL_WITH_RETURN_NULL(status, napi_ok);
     NAPI_ASSERT(env, wrapper != nullptr, "object wrapper is null");
     if (argc == requireArgc) {
         wrapper->DeleteWatch(env, type);
@@ -405,7 +374,8 @@ napi_value JSDistributedObjectStore::JSOff(napi_env env, napi_callback_info info
         wrapper->DeleteWatch(env, type, argv[2]);
     }
     napi_value result = nullptr;
-    napi_get_undefined(env, &result);
+    status = napi_get_undefined(env, &result);
+    CHECK_EQUAL_WITH_RETURN_NULL(status, napi_ok);
     return result;
 }
 }

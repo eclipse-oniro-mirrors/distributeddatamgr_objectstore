@@ -22,10 +22,11 @@
 #include "distributed_objectstore.h"
 
 namespace OHOS::ObjectStore {
-class DistributedObjectImpl;
 class DistributedObjectStoreImpl : public DistributedObjectStore {
 public:
-   // DistributedObjectStoreImpl(FlatObjectStore *flatObjectStore);
+    DistributedObjectStoreImpl();// todo delete
+
+    // DistributedObjectStoreImpl(FlatObjectStore *flatObjectStore);
     ~DistributedObjectStoreImpl() override;
     uint32_t Get(const std::string &sessionId, DistributedObject *object) override;
     DistributedObject *CreateObject(const std::string &sessionId) override;

@@ -17,6 +17,21 @@
 #define JS_DISTRIBUTEDDATAOBJECTSTORE_H
 
 namespace OHOS::ObjectStore {
+static napi_ref *g_instance = nullptr;
+constexpr size_t SESSION_ID_SIZE = 32;
+struct CreateObjectAsyncContext {
+    napi_env env = nullptr;
+    napi_async_work work = nullptr;
+    napi_deferred deferred = nullptr;
+    napi_ref callbackRef = nullptr;
+    char sessionId[SESSION_ID_SIZE] = { 0 };
+    size_t sessionIdLen = 0;
+    int32_t status = 0;
+    DistributedObjectStore *objectStore;
+    DistributedObject *object;
+
+};
+
 class JSDistributedObjectStore {
 public:
     static napi_value JSConstructor(napi_env env, napi_callback_info info);
@@ -27,6 +42,8 @@ public:
     static napi_value JSSync(napi_env env, napi_callback_info info);
     static napi_value JSOn(napi_env env, napi_callback_info info);
     static napi_value JSOff(napi_env env, napi_callback_info info);
+private:
+    static napi_value NewDistributedObject(napi_env env, DistributedObjectStore *objectStore, DistributedObject *object);
 };
 }
 
