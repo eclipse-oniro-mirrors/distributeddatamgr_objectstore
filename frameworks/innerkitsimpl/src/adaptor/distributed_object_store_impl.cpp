@@ -14,11 +14,9 @@
  */
 
 #include "distributed_objectstore_impl.h"
-// #include "distributed_object_impl.h"
+#include "distributed_object_impl.h"
 #include "objectstore_errors.h"
 #include "string_utils.h"
-#include "object_utils.h"
-#include "securec.h"
 
 namespace OHOS::ObjectStore {
 /* DistributedObjectStoreImpl::DistributedObjectStoreImpl(FlatObjectStore *flatObjectStore)
@@ -33,8 +31,9 @@ DistributedObjectStoreImpl::~DistributedObjectStoreImpl()
 
 DistributedObject *DistributedObjectStoreImpl::CreateObject(const std::string &sessionId)
 {
+    //todo
     LOG_ERROR("DistributedObjectStoreImpl::CreateObject %s", sessionId.c_str());
-    return nullptr;
+    return new DistributedObjectImpl();
 }
 
 uint32_t DistributedObjectStoreImpl::Sync(DistributedObject *object)
@@ -67,8 +66,10 @@ uint32_t DistributedObjectStoreImpl::UnWatch(DistributedObject *object)
     return SUCCESS;
 }
 
+DistributedObjectStoreImpl::DistributedObjectStoreImpl() {} //todo for test delete
+
 WatcherProxy::WatcherProxy(const std::shared_ptr<ObjectWatcher> objectWatcher)
-    : objectWatcher_(objectWatcher)
+: objectWatcher_(objectWatcher)
 {}
 
 void WatcherProxy::OnChanged(const Bytes &id)
