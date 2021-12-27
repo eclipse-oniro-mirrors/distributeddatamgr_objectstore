@@ -13,117 +13,178 @@
 * limitations under the License.
 */
 
+#include "distributed_object_impl.h"
+
 #include "objectstore_errors.h"
 #include "string_utils.h"
-#include "distributed_object_impl.h"
 
 namespace OHOS::ObjectStore {
 DistributedObjectImpl::~DistributedObjectImpl()
 {
-   // delete flatObject_;
+    delete flatObject_;
+}
+namespace {
+
+void PutNum(void *val, int32_t len, Bytes &data)
+{
+    if (len > sizeof(data.front()) * data.size()) {
+        data.resize(len);
+    }
+    for (int i = 0; i < len; i++) {
+        // 8 bit = 1 byte
+        data[i] = *(static_cast<uint64_t *>(val)) >> ((len - i - 1) * 8);
+    }
 }
 
-
-uint32_t DistributedObjectImpl::PutChar(const std::string &key, char value)
+uint32_t GetNum(Bytes &data, void *val, int32_t valLen)
 {
+    uint8_t *value = (uint8_t *)val;
+    if (data.size() != valLen) {
+        LOG_ERROR("DistributedObjectImpl:GetNum data.size() %d, valLen %d", data.size(), valLen);
+        return ERR_DATA_LEN;
+    }
+    for (int i = 0; i < valLen; i++) {
+        value[i] = data[valLen - 1 - i];
+    }
     return SUCCESS;
 }
-
-uint32_t DistributedObjectImpl::PutInt(const std::string &key, int32_t value)
-{
-    return SUCCESS;
-}
-
-uint32_t DistributedObjectImpl::PutShort(const std::string &key, int16_t value)
-{
-    return SUCCESS;
-}
-
-
-uint32_t DistributedObjectImpl::PutLong(const std::string &key, int64_t value)
-{
-    return SUCCESS;
-}
-
-uint32_t DistributedObjectImpl::PutFloat(const std::string &key, float value)
-{
-    return SUCCESS;
-}
+} // namespace
 
 uint32_t DistributedObjectImpl::PutDouble(const std::string &key, double value)
 {
-    return SUCCESS;
+    Bytes data;
+    PutNum(value, sizeof(value), data);
+    uint32_t status = flatObject_->SetField(StringUtils::StrToBytes(key), data);
+    if (status != SUCCESS) {
+        LOG_ERROR("DistributedObjectImpl::PutDouble setField err %d", status);
+    }
+    return status;
 }
 
 uint32_t DistributedObjectImpl::PutBoolean(const std::string &key, bool value)
 {
-    return SUCCESS;
+    Bytes data;
+    int32_t val = value ? 1 : 0;
+    PutNum(val, sizeof(value), data);
+    uint32_t status = flatObject_->SetField(StringUtils::StrToBytes(key), data);
+    if (status != SUCCESS) {
+        LOG_ERROR("DistributedObjectImpl::PutBoolean setField err %d", status);
+    }
+    return status;
 }
 
 uint32_t DistributedObjectImpl::PutString(const std::string &key, const std::string &value)
 {
-  //  flatObject_->SetField(StrToFieldBytes(key), StrToFieldBytes(value));
-    return SUCCESS;
-}
-
-uint32_t DistributedObjectImpl::PutByte(const std::string &key, int8_t value)
-{
-    return SUCCESS;
-}
-
-uint32_t DistributedObjectImpl::GetChar(const std::string &key, char &value)
-{
-    return SUCCESS;
-}
-
-uint32_t DistributedObjectImpl::GetInt(const std::string &key, int32_t &value)
-{
-    return SUCCESS;
-}
-
-uint32_t DistributedObjectImpl::GetShort(const std::string &key, int16_t &value)
-{
-    return SUCCESS;
-}
-
-uint32_t DistributedObjectImpl::GetLong(const std::string &key, int64_t &value)
-{
-    return SUCCESS;
-}
-
-uint32_t DistributedObjectImpl::GetFloat(const std::string &key, float &value)
-{
-    return SUCCESS;
+    uint32_t status = flatObject_->SetField(StringUtils::StrToBytes(key), StringUtils::StrToBytes(value));
+    if (status != SUCCESS) {
+        LOG_ERROR("DistributedObjectImpl::PutBoolean setField err %d", status);
+    }
+    return status;
 }
 
 uint32_t DistributedObjectImpl::GetDouble(const std::string &key, double &value)
 {
-    return SUCCESS;
+    uint32_t status = UpdateObject();
+    if (status != SUCCESS) {
+        LOG_ERROR("DistributedObjectImpl:GetDouble update object failed. %d", status);
+        return status;
+    }
+    Bytes data;
+    Bytes keyBytes = StringUtils::StrToBytes(key);
+    status = flatObject_->GetField(keyBytes, data);
+    if (status != SUCCESS) {
+        LOG_ERROR("DistributedObjectImpl:GetDouble field not exist. %d %s", status, key.c_str());
+        return status;
+    }
+    status = GetNum(data, &value, sizeof(value));
+    if (status != SUCCESS) {
+        LOG_ERROR("DistributedObjectImpl::GetDouble getNum err. %d", status);
+    }
+    return status;
 }
 
 uint32_t DistributedObjectImpl::GetBoolean(const std::string &key, bool &value)
 {
-    return SUCCESS;
-}
-
-uint32_t DistributedObjectImpl::GetByte(const std::string &key, int8_t &value)
-{
+    uint32_t status = UpdateObject();
+    if (status != SUCCESS) {
+        LOG_ERROR("DistributedObjectImpl:GetBoolean update object failed. %d", status);
+        return status;
+    }
+    int32_t flag = 0;
+    Bytes data;
+    Bytes keyBytes = StringUtils::StrToBytes(key);
+    status = flatObject_->GetField(keyBytes, data);
+    if (status != SUCCESS) {
+        LOG_ERROR("DistributedObjectImpl:GetBoolean field not exist. %d %s", status, key.c_str());
+        return status;
+    }
+    status = GetNum(data, &flag, sizeof(flag));
+    if (status != SUCCESS) {
+        LOG_ERROR("DistributedObjectImpl::GetBoolean getNum err. %d", status);
+        return status;
+    }
+    value = flag == 0 ? false : true;
     return SUCCESS;
 }
 
 uint32_t DistributedObjectImpl::GetString(const std::string &key, std::string &value)
 {
-    return SUCCESS;
+    uint32_t status = UpdateObject();
+    if (status != SUCCESS) {
+        LOG_ERROR("DistributedObjectImpl:GetString Failed to update object. %d", status);
+        return status;
+    }
+    Bytes data;
+    Bytes keyBytes = StringUtils::StrToBytes(key);
+    status = flatObject_->GetField(keyBytes, data);
+    if (status != SUCCESS) {
+        LOG_ERROR("DistributedObjectImpl:GetString field not exist. %d %s", status, key.c_str());
+        return status;
+    }
+    status = StringUtils::BytesToString(data, value);
+    if (status != SUCCESS) {
+        LOG_ERROR("DistributedObjectImpl::GetString dataToVal err. %d",status);
+    }
+    return status;
 }
 
 uint32_t DistributedObjectImpl::GetObjectId(std::string &objectId)
 {
+    uint32_t status = StringUtils::BytesToString(flatObject_->GetId(), objectId);
+    if (status != SUCCESS) {
+        LOG_ERROR("DistributedObjectImpl::GetObjectId bytesToString err. %d", status);
+    }
+    return status;
+}
+
+DistributedObjectImpl::DistributedObjectImpl()
+{
+}
+
+uint32_t DistributedObjectImpl::GetType(const std::string &key, Type &type)
+{
+    //todo
+    return 0;
+}
+
+uint32_t DistributedObjectImpl::UpdateObject()
+{
+    int32_t ret = flatObjectStore_->Get(flatObject_->GetId(), *flatObject_);
+    if (ret != SUCCESS) {
+        LOG_ERROR("DistributedObjectImpl:UpdateObject err, ret %d", ret);
+        return ret;
+    }
+    LOG_INFO("DistributedObjectImpl:update object success.");
     return SUCCESS;
 }
 
-DistributedObjectImpl::DistributedObjectImpl() {}
+FlatObject *DistributedObjectImpl::GetObject()
+{
+    return flatObject_;
+}
 
-uint32_t DistributedObjectImpl::GetType(const std::string &key, Type &type) {
-    return 0;
+DistributedObjectImpl::DistributedObjectImpl(FlatObject *flatObject, FlatObjectStore *flatObjectStore)
+    : flatObject_(flatObject), flatObjectStore_(flatObjectStore)
+{
 }
-}
+} // namespace OHOS::ObjectStore

@@ -37,6 +37,17 @@ constexpr uint32_t ERR_DATA_LEN = BASE_ERR_OFFSET + 11;     // get data len fail
 constexpr uint32_t ERR_KEYVAL = BASE_ERR_OFFSET + 12;     // get key value failed
 constexpr uint32_t ERR_GET_OBJECT = BASE_ERR_OFFSET + 13;     // get double size failed
 constexpr uint32_t ERR_OPENSESSION_REPEAT = BASE_ERR_OFFSET + 14;   // Open session fail
+constexpr uint32_t ERR_MOMEM = BASE_ERR_OFFSET + 15;   // make shared fail
+constexpr uint32_t ERR_DE_GETKV_FAIL = BASE_ERR_OFFSET + 16;   // KvStoreNbDelegate get KV failed
+constexpr uint32_t ERR_DE_NOT_EXIST = BASE_ERR_OFFSET + 17;   //get KvStoreNbDelegate failed
+constexpr uint32_t ERR_DB_GET_FAIL = BASE_ERR_OFFSET + 18;   //DB get entries failed
+constexpr uint32_t ERR_DB_ENTRY_FAIL = BASE_ERR_OFFSET + 19;   //DB get entry failed
+constexpr uint32_t ERR_CLOSE_STORAGE = BASE_ERR_OFFSET + 20;   //close kvStore failed
+constexpr uint32_t ERR_REGISTER = BASE_ERR_OFFSET + 21;   //register observer failed
+constexpr uint32_t ERR_NO_OBSERVER = BASE_ERR_OFFSET + 22;   //unregister observer not exist
+constexpr uint32_t ERR_UNRIGSTER = BASE_ERR_OFFSET + 23;   //unregister observer failed
+constexpr uint32_t ERR_NULL_OBJECT = BASE_ERR_OFFSET + 24;   //get object failed
+constexpr uint32_t ERR_NULL_OBJECTSTORE = BASE_ERR_OFFSET + 25;   //get objectStore failed
 }  // namespace OHOS::ObjectStore
 
 #endif

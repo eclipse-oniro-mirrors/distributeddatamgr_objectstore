@@ -16,17 +16,17 @@
 #ifndef DISTRIBUTED_OBJECTSTORE_IMPL_H
 #define DISTRIBUTED_OBJECTSTORE_IMPL_H
 
-#include <shared_mutex>
 #include <bytes.h>
+
+#include <shared_mutex>
 
 #include "distributed_objectstore.h"
 
 namespace OHOS::ObjectStore {
 class DistributedObjectStoreImpl : public DistributedObjectStore {
 public:
-    DistributedObjectStoreImpl();// todo delete
-
-    // DistributedObjectStoreImpl(FlatObjectStore *flatObjectStore);
+    DistributedObjectStoreImpl() = default;
+    DistributedObjectStoreImpl(FlatObjectStore *flatObjectStore);
     ~DistributedObjectStoreImpl() override;
     uint32_t Get(const std::string &sessionId, DistributedObject *object) override;
     DistributedObject *CreateObject(const std::string &sessionId) override;
@@ -34,23 +34,16 @@ public:
     uint32_t DeleteObject(const std::string &sessionId) override;
     uint32_t Watch(DistributedObject *object, std::shared_ptr<ObjectWatcher> watcher) override;
     uint32_t UnWatch(DistributedObject *object) override;
-/*
+    uint32_t Close() override;
+
 private:
     DistributedObjectImpl *CacheObject(FlatObject *flatObject, FlatObjectStore *flatObjectStore);
     FlatObjectStore *flatObjectStore_ = nullptr;
     std::map<DistributedObject *, std::shared_ptr<FlatObjectWatcher>> watchers_;
-    std::shared_mutex dataMutex_ {};
-    std::vector<DistributedObjectImpl*> objects_ {};
-    */
+    std::shared_mutex dataMutex_{};
+    std::vector<DistributedObjectImpl *> objects_{};
 };
-class WatcherProxy {//: public FlatObjectWatcher {
-public:
-    WatcherProxy(const std::shared_ptr<ObjectWatcher> objectWatcher);
-    void OnChanged(const Bytes &id) ;//todo override;
-    void OnDeleted(const Bytes &id) ;//todo override;
-private:
-    std::shared_ptr<ObjectWatcher> objectWatcher_;
-};
-}
+
+} // namespace OHOS::ObjectStore
 
 #endif // DISTRIBUTED_OBJECTSTORE_H

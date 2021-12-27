@@ -15,44 +15,34 @@
 
 #ifndef DISTRIBUTED_OBJECT_H
 #define DISTRIBUTED_OBJECT_H
+#include <map>
+#include <memory>
 #include <string>
 #include <vector>
-#include <memory>
-#include <map>
+
+#include "flat_object_store.h"
 
 namespace OHOS::ObjectStore {
-enum Type:uint8_t {
-
+enum Type : uint8_t {
+    TYPE_STRING = 0,
+    TYPE_BOOLEAN,
+    TYPE_DOUBLE,
 };
 class DistributedObject {
 public:
-    virtual ~DistributedObject() {};
-    virtual uint32_t PutChar(const std::string &key, char value) = 0;
-    virtual uint32_t PutInt(const std::string &key, int32_t value) = 0;
-    virtual uint32_t PutShort(const std::string &key, int16_t value) = 0;
-    virtual uint32_t PutLong(const std::string &key, int64_t value) = 0;
-    virtual uint32_t PutFloat(const std::string &key, float value) = 0;
+    virtual ~DistributedObject(){};
     virtual uint32_t PutDouble(const std::string &key, double value) = 0;
     virtual uint32_t PutBoolean(const std::string &key, bool value) = 0;
     virtual uint32_t PutString(const std::string &key, const std::string &value) = 0;
-    virtual uint32_t PutByte(const std::string &key, int8_t value) = 0;
-    virtual uint32_t GetChar(const std::string &key, char &value) = 0;
-    virtual uint32_t GetInt(const std::string &key, int32_t &value) = 0;
-    virtual uint32_t GetShort(const std::string &key, int16_t &value) = 0;
-    virtual uint32_t GetLong(const std::string &key, int64_t &value) = 0;
-    virtual uint32_t GetFloat(const std::string &key, float &value) = 0;
     virtual uint32_t GetDouble(const std::string &key, double &value) = 0;
     virtual uint32_t GetBoolean(const std::string &key, bool &value) = 0;
     virtual uint32_t GetString(const std::string &key, std::string &value) = 0;
-    virtual uint32_t GetByte(const std::string &key, int8_t &value) = 0;
     virtual uint32_t GetType(const std::string &key, Type &type) = 0;
     virtual uint32_t GetObjectId(std::string &objectId) = 0;
 };
 
-class ObjectWatcher {
-public:
-    virtual void OnChanged(const std::string &sessionid, const std::vector<const std::string>& changedData) = 0;
-    virtual void OnDeleted(const std::string &sessionid) = 0;
+class ObjectWatcher : public FlatObjectWatcher {
+    void OnChange(const KvStoreChangedData &data) override;
 };
-}  // namespace OHOS
+} // namespace OHOS::ObjectStore
 #endif // DISTRIBUTED_OBJECT_H
