@@ -53,7 +53,7 @@ uint32_t GetNum(Bytes &data, void *val, int32_t valLen)
 uint32_t DistributedObjectImpl::PutDouble(const std::string &key, double value)
 {
     Bytes data;
-    PutNum(value, sizeof(value), data);
+    PutNum(&value, sizeof(value), data);
     uint32_t status = flatObject_->SetField(StringUtils::StrToBytes(key), data);
     if (status != SUCCESS) {
         LOG_ERROR("DistributedObjectImpl::PutDouble setField err %d", status);
@@ -65,7 +65,7 @@ uint32_t DistributedObjectImpl::PutBoolean(const std::string &key, bool value)
 {
     Bytes data;
     int32_t val = value ? 1 : 0;
-    PutNum(val, sizeof(value), data);
+    PutNum(&val, sizeof(value), data);
     uint32_t status = flatObject_->SetField(StringUtils::StrToBytes(key), data);
     if (status != SUCCESS) {
         LOG_ERROR("DistributedObjectImpl::PutBoolean setField err %d", status);
@@ -143,7 +143,7 @@ uint32_t DistributedObjectImpl::GetString(const std::string &key, std::string &v
     }
     status = StringUtils::BytesToString(data, value);
     if (status != SUCCESS) {
-        LOG_ERROR("DistributedObjectImpl::GetString dataToVal err. %d",status);
+        LOG_ERROR("DistributedObjectImpl::GetString dataToVal err. %d", status);
     }
     return status;
 }

@@ -20,9 +20,10 @@
 #include <sstream>
 #include <string>
 #include <vector>
+
 #include "bytes.h"
-#include "objectstore_errors.h"
 #include "logger.h"
+#include "objectstore_errors.h"
 
 namespace OHOS::ObjectStore {
 class StringUtils final {
@@ -39,7 +40,7 @@ public:
     }
 
     static void Split(const std::string &strBase, const std::string &strSep, std::vector<std::string> &strsRet,
-                      bool bCanEmpty = false, bool bNeedTrim = true)
+        bool bCanEmpty = false, bool bNeedTrim = true)
     {
         strsRet.clear();
         std::string strTmp = bNeedTrim ? Trim(strBase) : strBase;
@@ -91,7 +92,7 @@ public:
         dst.assign(src.begin(), src.end());
         return dst;
     }
-    static uint32_t BytesToString(Bytes input, std::string& str)
+    static uint32_t BytesToString(Bytes input, std::string &str)
     {
         if (input.end() - input.begin() <= sizeof(int32_t)) {
             LOG_ERROR("StringUtils:BytesToString get input len err.");
@@ -100,9 +101,9 @@ public:
         std::vector<uint8_t>::const_iterator first = input.begin() + sizeof(int32_t);
         std::vector<uint8_t>::const_iterator end = input.end();
         Bytes rstStr(first, end);
-        str.assign(reinterpret_cast<char*>(rstStr.data()), rstStr.size());
+        str.assign(reinterpret_cast<char *>(rstStr.data()), rstStr.size());
         return SUCCESS;
     }
 };
-}  // namespace OHOS::ObjectStore
-#endif  // STRING_UTILS_H
+} // namespace OHOS::ObjectStore
+#endif // STRING_UTILS_H

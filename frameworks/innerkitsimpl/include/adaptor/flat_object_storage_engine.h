@@ -37,7 +37,7 @@ public:
     uint32_t CreateTable(const std::string &key) override;
     uint32_t GetTable(const std::string &key, std::map<Field, Value> &result) override;
     uint32_t UpdateItems(const std::string &key, std::map<Field, Value> &data) override;
-    uint32_t GetItem(const std::string &key, const Field &itemKey, const Field &value) override;
+    uint32_t GetItem(const std::string &key, const Field &itemKey, Field &value) override;
     uint32_t RegisterObserver(const std::string &key, std::shared_ptr<TableWatcher> watcher) override;
     uint32_t UnRegisterObserver(const std::string &key) override;
     //刷新delegates中的key为新的key
@@ -47,9 +47,9 @@ public:
 
 private:
     std::shared_mutex operationMutex_{};
-    std::shared_ptr<KvStoreDelegateManager> storeManager_;
-    std::map<std::string, KvStoreNbDelegate *> delegates;
-    std::map<std::string, TableWatcher *> observerMap_;
+    std::shared_ptr<DistributedDB::KvStoreDelegateManager> storeManager_;
+    std::map<std::string, DistributedDB::KvStoreNbDelegate *> delegates;
+    std::map<std::string, std::shared_ptr<TableWatcher>> observerMap_;
 };
 } // namespace OHOS::ObjectStore
 #endif

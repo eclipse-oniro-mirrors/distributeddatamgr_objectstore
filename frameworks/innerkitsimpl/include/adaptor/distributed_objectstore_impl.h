@@ -44,6 +44,16 @@ private:
     std::vector<DistributedObjectImpl *> objects_{};
 };
 
+class WatcherProxy : public FlatObjectWatcher {
+public:
+    WatcherProxy(const std::shared_ptr<ObjectWatcher> objectWatcher);
+    void OnChanged(const std::string &sessionid, const std::vector<const std::string> &changedData) override;
+    void OnDeleted(const std::string &sessionid) override;
+
+private:
+    std::shared_ptr<ObjectWatcher> objectWatcher_;
+};
+
 } // namespace OHOS::ObjectStore
 
 #endif // DISTRIBUTED_OBJECTSTORE_H

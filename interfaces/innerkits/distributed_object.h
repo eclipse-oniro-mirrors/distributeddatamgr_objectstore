@@ -21,6 +21,7 @@
 #include <vector>
 
 #include "flat_object_store.h"
+#include "watcher.h"
 
 namespace OHOS::ObjectStore {
 enum Type : uint8_t {
@@ -42,7 +43,9 @@ public:
 };
 
 class ObjectWatcher : public FlatObjectWatcher {
-    void OnChange(const KvStoreChangedData &data) override;
+public:
+    virtual void OnChanged(const std::string &sessionid, const std::vector<const std::string> &changedData) = 0;
+    virtual void OnDeleted(const std::string &sessionid) = 0;
 };
 } // namespace OHOS::ObjectStore
 #endif // DISTRIBUTED_OBJECT_H

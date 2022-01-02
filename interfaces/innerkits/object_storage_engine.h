@@ -22,13 +22,16 @@
 #include <map>
 #include <vector>
 
+#include "watcher.h"
+
 namespace OHOS::ObjectStore {
 using Key = std::vector<uint8_t>;
 using Value = std::vector<uint8_t>;
 using Field = std::vector<uint8_t>;
 
-class TableWatcher : public DistributedDB::KvStoreObserver {
-    void OnChange(const KvStoreChangedData &data) override;
+class TableWatcher : public Watcher {
+    void OnChanged(const std::string &sessionid, const std::vector<const std::string> &changedData) override;
+    void OnDeleted(const std::string &sessionid) override;
 };
 
 class ObjectStorageEngine {
@@ -40,13 +43,12 @@ public:
     ObjectStorageEngine() = default;
     virtual ~ObjectStorageEngine() = default;
     virtual uint32_t Open() = 0;
-    virtual uint32_t Clear() = 0;
     virtual uint32_t Close() = 0;
     virtual uint32_t DeleteTable(const std::string &key) = 0;
     virtual uint32_t CreateTable(const std::string &key) = 0;
     virtual uint32_t GetTable(const std::string &key, std::map<Field, Value> &result) = 0;
     virtual uint32_t UpdateItems(const std::string &key, std::map<Field, Value> &data) = 0;
-    virtual uint32_t GetItem(const std::string &key, const Field &itemKey, const Field &value) = 0;
+    virtual uint32_t GetItem(const std::string &key, const Field &itemKey, Field &value) = 0;
     virtual uint32_t RegisterObserver(const std::string &key, std::shared_ptr<TableWatcher> watcher) = 0;
     virtual uint32_t UnRegisterObserver(const std::string &key) = 0;
     virtual uint32_t ChangeKey(const std::string &oldKey, const std::string &newKey) = 0;

@@ -73,7 +73,7 @@ uint32_t DistributedObjectStoreImpl::Sync(DistributedObject *object)
         LOG_ERROR("DistributedObjectStoreImpl::Sync object err ");
         return ERR_NULL_OBJECTSTORE;
     }
-    return flatObjectStore_->Put(*dynamic_cast<DistributedObjectImpl *>(object)->GetObject());
+    return flatObjectStore_->Put(*static_cast<DistributedObjectImpl *>(object)->GetObject());
 }
 
 uint32_t DistributedObjectStoreImpl::DeleteObject(const std::string &sessionId)
@@ -141,12 +141,14 @@ uint32_t DistributedObjectStoreImpl::Watch(DistributedObject *object, std::share
         LOG_ERROR("DistributedObjectStoreImpl::Watch get objectId failed %d", status);
         return status;
     }
-    flatObjectStore_->Watch(StringUtils::StrToBytes(objectId), watcher);
+    std::shared_ptr<WatcherProxy> watcherProxy = std::make_shared<WatcherProxy>(watcher);
+    status = flatObjectStore_->Watch(StringUtils::StrToBytes(objectId), watcherProxy);
     if (status != SUCCESS) {
         LOG_ERROR("DistributedObjectStoreImpl::Watch failed %d", status);
         return status;
     }
-    watchers_.insert_or_assign(object, watcher);
+    watchers_.insert_or_assign(object, watcherProxy);
+    LOG_INFO("DistributedObjectStoreImpl:Watch object success.");
     return SUCCESS;
 }
 
@@ -171,7 +173,23 @@ uint32_t DistributedObjectStoreImpl::UnWatch(DistributedObject *object)
         LOG_ERROR("DistributedObjectStoreImpl::Watch failed %d", status);
         return status;
     }
+    watchers_.erase(object);
+    LOG_INFO("DistributedObjectStoreImpl:UnWatch object success.");
     return SUCCESS;
+}
+
+WatcherProxy::WatcherProxy(const std::shared_ptr<ObjectWatcher> objectWatcher) : objectWatcher_(objectWatcher)
+{
+}
+
+void WatcherProxy::OnChanged(const std::string &sessionid, const std::vector<const std::string> &changedData)
+{
+    objectWatcher_->OnChanged(sessionid, changedData);
+}
+
+void WatcherProxy::OnDeleted(const std::string &sessionid)
+{
+    objectWatcher_->OnDeleted(sessionid);
 }
 
 DistributedObjectStore *DistributedObjectStore::GetInstance()

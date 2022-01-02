@@ -31,6 +31,7 @@ config("objectstore_config") {
     "../../frameworks/include/communicator",
     "../../frameworks/include/object",
     "../../interfaces/innerkits",
+    "//foundation/distributeddatamgr/distributeddatamgr/services/distributeddataservice/libs/distributeddb/interfaces/include",
     "//third_party/bounds_checking_function/include",
     "//foundation/communication/dsoftbus/interfaces/kits/bus_center",
     "//foundation/communication/dsoftbus/interfaces/kits/transport",

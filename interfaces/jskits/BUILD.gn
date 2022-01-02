@@ -36,7 +36,8 @@ config("objectstore_config") {
 config("objectstore_public_config") {
   visibility = [ "//foundation/distributeddatamgr/objectstore:*" ]
 
-  include_dirs = [ "." ]
+  include_dirs = [".",
+  "//foundation/distributeddatamgr/distributeddatamgr/services/distributeddataservice/libs/distributeddb/interfaces/include"]
 }
 
 base_output_path = get_label_info(":distributed_data_object_js", "target_out_dir")
@@ -53,8 +54,11 @@ ohos_shared_library("distributeddataobject") {
     "../../frameworks/jskitsimpl/src/adaptor/js_distributedobject.cpp",
     "../../frameworks/jskitsimpl/src/adaptor/js_object_wrapper.cpp",
     "../../frameworks/jskitsimpl/src/adaptor/js_module_init.cpp",
-    "../../frameworks/innerkitsimpl/src/adaptor/distributed_object_store_impl.cpp",
     "../../frameworks/innerkitsimpl/src/adaptor/distributed_object_impl.cpp",
+    "../../frameworks/innerkitsimpl/src/adaptor/distributed_object_store_impl.cpp",
+    "../../frameworks/innerkitsimpl/src/adaptor/flat_object.cpp",
+    "../../frameworks/innerkitsimpl/src/adaptor/flat_object_storage_engine.cpp",
+    "../../frameworks/innerkitsimpl/src/adaptor/flat_object_store.cpp",
   ]
 
   configs = [ ":objectstore_config" ]
@@ -63,7 +67,8 @@ ohos_shared_library("distributeddataobject") {
       "//foundation/ace/napi:ace_napi",
       "//utils/native/base:utils",
       "//utils/native/base:utilsecurec",
-      ":distributed_data_object_js",
+      "//foundation/distributeddatamgr/distributeddatamgr/services/distributeddataservice/libs/distributeddb:distributeddb",
+      ":distributed_data_object_js"
   ]
   external_deps = [
     "hiviewdfx_hilog_native:libhilog"

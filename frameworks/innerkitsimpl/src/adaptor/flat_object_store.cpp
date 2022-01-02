@@ -16,7 +16,6 @@
 #include "flat_object_store.h"
 
 #include "logger.h"
-#include "object_utils.h"
 #include "objectstore_errors.h"
 #include "string_utils.h"
 
