@@ -38,7 +38,7 @@ void JSObjectWrapper::AddWatch(napi_env env, const char *type, napi_value handle
         watcher_ = std::make_shared<JSWatcher>(env, objectStore_, object_);
     }
     watcher_->On(type, handler);
-    LOG_INFO("JSObjectWrapper::AddWatch %s", type);
+    LOG_INFO("JSObjectWrapper::AddWatch %{public}s", type);
 }
 
 void JSObjectWrapper::DeleteWatch(napi_env env, const char *type, napi_value handler) {

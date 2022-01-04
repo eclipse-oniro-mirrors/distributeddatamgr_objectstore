@@ -17,6 +17,7 @@
 #include <cstring>
 #include <objectstore_errors.h>
 #include <logger.h>
+#include "js_util.h"
 #include "napi/native_api.h"
 #include "napi/native_node_api.h"
 
@@ -34,7 +35,7 @@ JSWatcher::JSWatcher(const napi_env env, DistributedObjectStore *objectStore, Di
     if (ret != SUCCESS) {
         LOG_ERROR("watch %s error", sessionId.c_str());
     } else {
-        LOG_INFO("watch %s error", sessionId.c_str());
+        LOG_INFO("watch %s success", sessionId.c_str());
     }
 
 }
@@ -53,6 +54,7 @@ void JSWatcher::On(const char *type, napi_value handler)
     if (event == EVENT_UNKNOWN) {
         return;
     }
+    LOG_ERROR("add %{public}p", handler);
     listeners_[event].Add(env_, handler);
 }
 
@@ -62,6 +64,9 @@ void JSWatcher::Off(const char *type, napi_value handler)
     if (event == EVENT_UNKNOWN) {
         return;
     }
+    std::string sessionId;
+    object_->GetObjectId(sessionId);
+    LOG_ERROR("del %{public}s", sessionId.c_str());
     if (handler == nullptr) {
         listeners_[event].Clear(env_);
     } else {
@@ -69,20 +74,27 @@ void JSWatcher::Off(const char *type, napi_value handler)
     }
 }
 
-void JSWatcher::Emit(napi_value thisArg, const char *type)
+void JSWatcher::Emit(const char *type, const std::string &sessionId, const std::vector<std::string> &changeData)
 {
+    LOG_ERROR("gogogo %{public}s", sessionId.c_str());
     Event event = Find(type);
     if (event == EVENT_UNKNOWN) {
+        LOG_ERROR("unknow %{public}s", type);
         return;
     }
     for (EventHandler* handler = listeners_[event].handlers_; handler != nullptr; handler = handler->next) {
-        if (thisArg == nullptr) {
-            napi_get_undefined(env_, &thisArg);
-        }
         napi_value callback = nullptr;
         napi_value result = nullptr;
+        napi_value global = nullptr;
+        napi_value argv[2] = { nullptr };
         napi_get_reference_value(env_, handler->callbackRef, &callback);
-        napi_call_function(env_, thisArg, callback, 0, nullptr, &result);
+        napi_get_global(env_, &global);
+        JSUtil::SetValue(env_, sessionId, argv[0]);
+        JSUtil::SetValue(env_, changeData, argv[1]);
+        napi_status status = napi_call_function(env_, global, callback, 2, argv, &result);
+        if (status != napi_ok) {
+            LOG_ERROR("notify data change failed status:%{public}d callback:%{public}p in %{public}p", status, callback, handler->callbackRef);
+        }
     }
 }
 
@@ -145,8 +157,10 @@ void EventListener::Del(napi_env env, napi_value handler)
 
 void EventListener::Add(napi_env env, napi_value handler)
 {
-    if (Find(env, handler) != nullptr)
+    if (Find(env, handler) != nullptr) {
+        LOG_ERROR("has added,return");
         return;
+    }
 
     if (handlers_ == nullptr) {
         handlers_ = new EventHandler();
@@ -157,12 +171,11 @@ void EventListener::Add(napi_env env, napi_value handler)
         handlers_ = temp;
     }
     napi_create_reference(env, handler, 1, &handlers_->callbackRef);
+    LOG_ERROR("add %{public}p in  %{public}p", handler, handlers_->callbackRef);
 }
 
-void WatcherImpl::OnChanged(const std::string &sessionid, const std::vector<const std::string> &changedData) {
-    // todo watcher_->Emit();
-    watcher_ = nullptr;
-    LOG_ERROR("test %p", watcher_);
+void WatcherImpl::OnChanged(const std::string &sessionid, const std::vector<std::string> &changedData) {
+    watcher_->Emit("change", sessionid, changedData);
 }
 
 void WatcherImpl::OnDeleted(const std::string &sessionid) {

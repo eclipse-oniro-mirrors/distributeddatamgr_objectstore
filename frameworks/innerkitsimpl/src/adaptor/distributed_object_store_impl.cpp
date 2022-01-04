@@ -182,7 +182,7 @@ WatcherProxy::WatcherProxy(const std::shared_ptr<ObjectWatcher> objectWatcher) :
 {
 }
 
-void WatcherProxy::OnChanged(const std::string &sessionid, const std::vector<const std::string> &changedData)
+void WatcherProxy::OnChanged(const std::string &sessionid, const std::vector<std::string> &changedData)
 {
     objectWatcher_->OnChanged(sessionid, changedData);
 }

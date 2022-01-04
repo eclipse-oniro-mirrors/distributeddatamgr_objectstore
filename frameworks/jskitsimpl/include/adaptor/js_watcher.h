@@ -48,7 +48,7 @@ public:
     ~JSWatcher();
     void On(const char* type, napi_value handler);
     void Off(const char* type, napi_value handler = nullptr);
-    void Emit(napi_value thisArg, const char* type);
+    void Emit(const char *type, const std::string &sessionId, const std::vector<std::string> &changeData);
     Event Find(const char* type) const;
 private:
     napi_env env_;
@@ -63,7 +63,7 @@ public:
 
     virtual ~WatcherImpl();
 
-    void OnChanged(const std::string &sessionid, const std::vector<const std::string> &changedData) override;
+    void OnChanged(const std::string &sessionid, const std::vector<std::string> &changedData) override;
     void OnDeleted(const std::string &sessionid) override;
 private:
     JSWatcher *watcher_ = nullptr;

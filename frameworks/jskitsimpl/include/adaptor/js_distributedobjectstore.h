@@ -17,7 +17,6 @@
 #define JS_DISTRIBUTEDDATAOBJECTSTORE_H
 
 namespace OHOS::ObjectStore {
-static napi_ref *g_instance = nullptr;
 constexpr size_t SESSION_ID_SIZE = 32;
 struct CreateObjectAsyncContext {
     napi_env env = nullptr;
@@ -34,7 +33,6 @@ struct CreateObjectAsyncContext {
 
 class JSDistributedObjectStore {
 public:
-    static napi_value JSConstructor(napi_env env, napi_callback_info info);
     static napi_value JSCreateObject(napi_env env, napi_callback_info info);
     static napi_value JSCreateObjectSync(napi_env env, napi_callback_info info);
     static napi_value JSDestroyObject(napi_env env, napi_callback_info info);

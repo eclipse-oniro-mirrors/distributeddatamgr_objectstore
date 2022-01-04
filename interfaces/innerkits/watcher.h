@@ -23,7 +23,7 @@ namespace OHOS::ObjectStore {
 class Watcher : public DistributedDB::KvStoreObserver {
 public:
     virtual ~Watcher() = default;
-    virtual void OnChanged(const std::string &sessionid, const std::vector<const std::string> &changedData) = 0;
+    virtual void OnChanged(const std::string &sessionid, const std::vector<std::string> &changedData) = 0;
     virtual void OnDeleted(const std::string &sessionid) = 0;
     virtual void OnChange(const DistributedDB::KvStoreChangedData &data)
     {
