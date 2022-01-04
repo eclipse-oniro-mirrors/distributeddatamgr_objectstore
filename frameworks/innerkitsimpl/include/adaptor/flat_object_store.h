@@ -35,7 +35,6 @@ public:
     ~FlatObjectStore();
     uint32_t Open();
     uint32_t CreateObject(const std::string &sessionId);
-    uint32_t Close();
     uint32_t Put(const FlatObject &flatObject);
     uint32_t Get(const Bytes &objectId, FlatObject &flatObject) const;
     uint32_t Delete(const Bytes &objectId);

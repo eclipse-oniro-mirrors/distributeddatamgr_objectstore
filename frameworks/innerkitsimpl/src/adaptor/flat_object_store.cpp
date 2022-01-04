@@ -45,12 +45,6 @@ uint32_t FlatObjectStore::Open()
     return SUCCESS;
 }
 
-uint32_t FlatObjectStore::Close()
-{
-    storageEngine_->Close();
-    return SUCCESS;
-}
-
 uint32_t FlatObjectStore::CreateObject(const std::string &sessionId)
 {
     if (!storageEngine_->opened_) {
@@ -71,13 +65,13 @@ uint32_t FlatObjectStore::Put(const FlatObject &flatObject)
         LOG_ERROR("FlatObjectStore::Put DB has not init");
         return ERR_DB_NOT_INIT;
     }
-    std::string oId;
-    uint32_t status = StringUtils::BytesToString(flatObject.GetId(), oId);
+    std::string sessionId;
+    uint32_t status = StringUtils::BytesToString(flatObject.GetId(), sessionId);
     if (status != SUCCESS) {
-        LOG_ERROR("FlatObjectStore::Put get oid err %d", status);
+        LOG_ERROR("FlatObjectStore::Put get sessionId err %d", status);
         return status;
     }
-    status = storageEngine_->UpdateItems(oId, const_cast<std::map<Bytes, Bytes> &>(flatObject.GetFields()));
+    status = storageEngine_->UpdateItems(sessionId, const_cast<std::map<Bytes, Bytes> &>(flatObject.GetFields()));
     if (status != SUCCESS) {
         LOG_ERROR("FlatObjectStore::Put updateItems err %d", status);
     }
@@ -90,14 +84,14 @@ uint32_t FlatObjectStore::Get(const Bytes &objectId, FlatObject &flatObject) con
         LOG_ERROR("FlatObjectStore::Get DB has not init");
         return ERR_DB_NOT_INIT;
     }
-    std::map<Bytes, Bytes> &fields = const_cast<std::map<Bytes, Bytes> &>(flatObject.GetFields());
-    std::string oId;
-    uint32_t status = StringUtils::BytesToString(flatObject.GetId(), oId);
+    std::map<Bytes, Bytes> fields;
+    std::string sessionId;
+    uint32_t status = StringUtils::BytesToString(flatObject.GetId(), sessionId);
     if (status != SUCCESS) {
-        LOG_ERROR("FlatObjectStore::Get get oid err %d", status);
+        LOG_ERROR("FlatObjectStore::Get get sessionId err %d", status);
         return status;
     }
-    status = storageEngine_->GetTable(oId, fields);
+    status = storageEngine_->GetTable(sessionId, fields);
     if (status != SUCCESS) {
         LOG_ERROR("FlatObjectStore::Get getTable failed %d", status);
         return status;
@@ -113,13 +107,13 @@ uint32_t FlatObjectStore::Delete(const Bytes &objectId)
         LOG_ERROR("FlatObjectStore::Delete DB has not init");
         return ERR_DB_NOT_INIT;
     }
-    std::string oId;
-    uint32_t status = StringUtils::BytesToString(objectId, oId);
+    std::string sessionId;
+    uint32_t status = StringUtils::BytesToString(objectId, sessionId);
     if (status != SUCCESS) {
-        LOG_ERROR("FlatObjectStore::Get get oid err %d", status);
+        LOG_ERROR("FlatObjectStore::Get get sessionId err %d", status);
         return status;
     }
-    status = storageEngine_->DeleteTable(oId);
+    status = storageEngine_->DeleteTable(sessionId);
     if (status != SUCCESS) {
         LOG_ERROR("FlatObjectStore: Failed to delete object %d", status);
         return status;
@@ -129,13 +123,13 @@ uint32_t FlatObjectStore::Delete(const Bytes &objectId)
 
 uint32_t FlatObjectStore::Watch(const Bytes &objectId, std::shared_ptr<FlatObjectWatcher> watcher)
 {
-    std::string oid;
-    uint32_t status = StringUtils::BytesToString(objectId, oid);
+    std::string sessionId;
+    uint32_t status = StringUtils::BytesToString(objectId, sessionId);
     if (status != SUCCESS) {
-        LOG_ERROR("FlatObjectStore::Watch get oid failed %d", status);
+        LOG_ERROR("FlatObjectStore::Watch get sessionId failed %d", status);
         return status;
     }
-    status = storageEngine_->RegisterObserver(oid, watcher);
+    status = storageEngine_->RegisterObserver(sessionId, watcher);
     if (status != SUCCESS) {
         LOG_ERROR("FlatObjectStore::Watch failed %d", status);
     }
@@ -144,13 +138,13 @@ uint32_t FlatObjectStore::Watch(const Bytes &objectId, std::shared_ptr<FlatObjec
 
 uint32_t FlatObjectStore::UnWatch(const Bytes &objectId)
 {
-    std::string oid;
-    uint32_t status = StringUtils::BytesToString(objectId, oid);
+    std::string sessionId;
+    uint32_t status = StringUtils::BytesToString(objectId, sessionId);
     if (status != SUCCESS) {
-        LOG_ERROR("FlatObjectStore::Watch get oid failed %d", status);
+        LOG_ERROR("FlatObjectStore::Watch get sessionId failed %d", status);
         return status;
     }
-    status = storageEngine_->UnRegisterObserver(oid);
+    status = storageEngine_->UnRegisterObserver(sessionId);
     if (status != SUCCESS) {
         LOG_ERROR("FlatObjectStore::Watch failed %d", status);
     }

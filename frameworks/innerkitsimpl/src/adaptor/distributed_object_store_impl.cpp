@@ -26,6 +26,7 @@ DistributedObjectStoreImpl::DistributedObjectStoreImpl(FlatObjectStore *flatObje
 
 DistributedObjectStoreImpl::~DistributedObjectStoreImpl()
 {
+    delete flatObject_;
     delete flatObjectStore_;
 }
 DistributedObjectImpl *DistributedObjectStoreImpl::CacheObject(FlatObject *flatObject, FlatObjectStore *flatObjectStore)
@@ -49,18 +50,18 @@ DistributedObject *DistributedObjectStoreImpl::CreateObject(const std::string &s
         LOG_ERROR("DistributedObjectStoreImpl::CreateObject CreateTable err %d", status);
         return nullptr;
     }
-    FlatObject *flatObject = new (std::nothrow) FlatObject();
-    if (flatObject == nullptr) {
+    flatObject_ = new (std::nothrow) FlatObject();
+    if (flatObject_ == nullptr) {
         LOG_ERROR("no memory for FlatObjectStore malloc!");
         return nullptr;
     }
-    status = flatObjectStore_->Get(StringUtils::StrToBytes(sessionId), reinterpret_cast<FlatObject &>(flatObject));
+    status = flatObjectStore_->Get(StringUtils::StrToBytes(sessionId), reinterpret_cast<FlatObject &>(flatObject_));
     if (status != SUCCESS) {
         LOG_ERROR("DistributedObjectStoreImpl::CreateObject get object failed %d", status);
     }
-    flatObjectStore_->Put(*flatObject);
+    flatObjectStore_->Put(*flatObject_);
     LOG_INFO("create object for owner");
-    return CacheObject(flatObject, flatObjectStore_);
+    return CacheObject(flatObject_, flatObjectStore_);
 }
 
 uint32_t DistributedObjectStoreImpl::Sync(DistributedObject *object)
@@ -109,18 +110,7 @@ uint32_t DistributedObjectStoreImpl::Get(const std::string &objectId, Distribute
     LOG_ERROR("DistributedObjectStoreImpl::Get object err, no object");
     return ERR_GET_OBJECT;
 }
-uint32_t DistributedObjectStoreImpl::Close()
-{
-    {
-        std::unique_lock<std::shared_mutex> cacheLock(dataMutex_);
-        for (auto &item : objects_) {
-            flatObjectStore_->Delete(item->GetObject()->GetId());
-            delete item;
-        }
-    }
-    flatObjectStore_->Close();
-    return SUCCESS;
-}
+
 uint32_t DistributedObjectStoreImpl::Watch(DistributedObject *object, std::shared_ptr<ObjectWatcher> watcher)
 {
     if (object == nullptr) {
@@ -168,7 +158,7 @@ uint32_t DistributedObjectStoreImpl::UnWatch(DistributedObject *object)
         LOG_ERROR("DistributedObjectStoreImpl::Watch get objectId failed %d", status);
         return status;
     }
-    flatObjectStore_->UnWatch(StringUtils::StrToBytes(objectId));
+    status = flatObjectStore_->UnWatch(StringUtils::StrToBytes(objectId));
     if (status != SUCCESS) {
         LOG_ERROR("DistributedObjectStoreImpl::Watch failed %d", status);
         return status;

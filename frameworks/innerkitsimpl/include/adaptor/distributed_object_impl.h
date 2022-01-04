@@ -42,6 +42,7 @@ private:
     uint32_t UpdateObject();
     FlatObject *flatObject_;
     FlatObjectStore *flatObjectStore_ = nullptr;
+    std::map<std::string, Type> keyType_;
 };
 } // namespace OHOS::ObjectStore
 

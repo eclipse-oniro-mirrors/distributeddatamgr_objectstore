@@ -54,7 +54,8 @@ uint32_t DistributedObjectImpl::PutDouble(const std::string &key, double value)
 {
     Bytes data;
     PutNum(&value, sizeof(value), data);
-    uint32_t status = flatObject_->SetField(StringUtils::StrToBytes(key), data);
+    keyType_.insert_or_assign(key, TYPE_DOUBLE);
+    uint32_t status = flatObject_->SetItem(StringUtils::StrToBytes("p_" + key), data);
     if (status != SUCCESS) {
         LOG_ERROR("DistributedObjectImpl::PutDouble setField err %d", status);
     }
@@ -66,7 +67,8 @@ uint32_t DistributedObjectImpl::PutBoolean(const std::string &key, bool value)
     Bytes data;
     int32_t val = value ? 1 : 0;
     PutNum(&val, sizeof(value), data);
-    uint32_t status = flatObject_->SetField(StringUtils::StrToBytes(key), data);
+    keyType_.insert_or_assign(key, TYPE_BOOLEAN);
+    uint32_t status = flatObject_->SetItem(StringUtils::StrToBytes("p_" + key), data);
     if (status != SUCCESS) {
         LOG_ERROR("DistributedObjectImpl::PutBoolean setField err %d", status);
     }
@@ -75,7 +77,8 @@ uint32_t DistributedObjectImpl::PutBoolean(const std::string &key, bool value)
 
 uint32_t DistributedObjectImpl::PutString(const std::string &key, const std::string &value)
 {
-    uint32_t status = flatObject_->SetField(StringUtils::StrToBytes(key), StringUtils::StrToBytes(value));
+    keyType_.insert_or_assign(key, TYPE_STRING);
+    uint32_t status = flatObject_->SetItem(StringUtils::StrToBytes("p_" + key), StringUtils::StrToBytes(value));
     if (status != SUCCESS) {
         LOG_ERROR("DistributedObjectImpl::PutBoolean setField err %d", status);
     }
@@ -90,8 +93,8 @@ uint32_t DistributedObjectImpl::GetDouble(const std::string &key, double &value)
         return status;
     }
     Bytes data;
-    Bytes keyBytes = StringUtils::StrToBytes(key);
-    status = flatObject_->GetField(keyBytes, data);
+    Bytes keyBytes = StringUtils::StrToBytes("p_" + key);
+    status = flatObject_->GetItem(keyBytes, data);
     if (status != SUCCESS) {
         LOG_ERROR("DistributedObjectImpl:GetDouble field not exist. %d %s", status, key.c_str());
         return status;
@@ -112,8 +115,8 @@ uint32_t DistributedObjectImpl::GetBoolean(const std::string &key, bool &value)
     }
     int32_t flag = 0;
     Bytes data;
-    Bytes keyBytes = StringUtils::StrToBytes(key);
-    status = flatObject_->GetField(keyBytes, data);
+    Bytes keyBytes = StringUtils::StrToBytes("p_" + key);
+    status = flatObject_->GetItem(keyBytes, data);
     if (status != SUCCESS) {
         LOG_ERROR("DistributedObjectImpl:GetBoolean field not exist. %d %s", status, key.c_str());
         return status;
@@ -135,8 +138,8 @@ uint32_t DistributedObjectImpl::GetString(const std::string &key, std::string &v
         return status;
     }
     Bytes data;
-    Bytes keyBytes = StringUtils::StrToBytes(key);
-    status = flatObject_->GetField(keyBytes, data);
+    Bytes keyBytes = StringUtils::StrToBytes("p_" + key);
+    status = flatObject_->GetItem(keyBytes, data);
     if (status != SUCCESS) {
         LOG_ERROR("DistributedObjectImpl:GetString field not exist. %d %s", status, key.c_str());
         return status;
@@ -163,8 +166,11 @@ DistributedObjectImpl::DistributedObjectImpl()
 
 uint32_t DistributedObjectImpl::GetType(const std::string &key, Type &type)
 {
-    //todo
-    return 0;
+    if (keyType_.count(key) != 0) {
+        type = keyType_[key];
+        return SUCCESS;
+    }
+    return ERR_KEY_TYPE;
 }
 
 uint32_t DistributedObjectImpl::UpdateObject()

@@ -39,40 +39,35 @@ const std::map<Bytes, Bytes> &FlatObject::GetFields() const
     return fields_;
 }
 
-const uint32_t &FlatObject::GetField(Bytes &key, Bytes &value) const
+const uint32_t &FlatObject::GetItem(Bytes &key, Bytes &value) const
 {
-    if (fields_.count(key) != 0) {
-        value = fields_.at(key);
-        return SUCCESS;
-    }
-    std::string oid;
-    uint32_t status = StringUtils::BytesToString(id_, oid);
+    std::string sessionId;
+    uint32_t status = StringUtils::BytesToString(id_, sessionId);
     if (status != SUCCESS) {
         LOG_ERROR("FlatObject::GetField get string failed %d", status);
         return status;
     }
-    status = storageEngine_->GetItem(oid, key, value);
+    status = storageEngine_->GetItem(sessionId, key, value);
     if (status != SUCCESS) {
         LOG_ERROR("FlatObject::GetField get item failed %d", status);
     }
     return status;
 }
 
-uint32_t FlatObject::SetField(const Bytes &field, const Bytes &value)
+uint32_t FlatObject::SetItem(const Bytes &key, const Bytes &value)
 {
-    std::string oid;
-    uint32_t status = StringUtils::BytesToString(id_, oid);
+    std::string sessionId;
+    uint32_t status = StringUtils::BytesToString(id_, sessionId);
     if (status != SUCCESS) {
-        LOG_ERROR("FlatObject::SetFields get oid err %d", status);
+        LOG_ERROR("FlatObject::SetFields get sessionId err %d", status);
         return status;
     }
-    std::map<Bytes, Bytes> fields;
-    fields.insert_or_assign(field, value);
-    status = storageEngine_->UpdateItems(oid, const_cast<std::map<Field, Value> &>(fields));
+    std::map<Bytes, Bytes> table;
+    table.insert_or_assign(key, value);
+    status = storageEngine_->UpdateItems(sessionId, const_cast<std::map<Field, Value> &>(table));
     if (status != SUCCESS) {
         LOG_ERROR("FlatObjectStore::Get getTable failed %d", status);
     }
-    fields_[field] = value;
     return status;
 }
 void FlatObject::SetFields(const std::map<Bytes, Bytes> &fields)

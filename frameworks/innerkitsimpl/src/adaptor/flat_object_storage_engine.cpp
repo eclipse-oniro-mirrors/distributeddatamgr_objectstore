@@ -36,7 +36,7 @@ uint32_t FlatObjectStorageEngine::Open()
         return SUCCESS;
     }
     storeManager_ = std::make_shared<DistributedDB::KvStoreDelegateManager>("objectstore",
-        "user0"); //todo 建议按照设备id配置，保证各设备的不一致(APP_ID,USER_ID)
+        "user0");
     if (storeManager_ == nullptr) {
         LOG_ERROR("FlatObjectStorageEngine::make shared fail");
         return ERR_MOMEM;
@@ -240,7 +240,7 @@ uint32_t FlatObjectStorageEngine::UnRegisterObserver(const std::string &key)
 uint32_t FlatObjectStorageEngine::ChangeKey(const std::string &oldKey, const std::string &newKey)
 {
     if (!opened_) {
-        LOG_ERROR("FlatObjectStorageEngine::RegisterObserver kvStore has not init");
+        LOG_ERROR("FlatObjectStorageEngine::ChangeKey kvStore has not init");
         return ERR_DB_NOT_INIT;
     }
     std::unique_lock<std::shared_mutex> lock(operationMutex_);
