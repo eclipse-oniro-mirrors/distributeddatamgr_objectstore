@@ -31,10 +31,10 @@ public:
     static napi_value JSConstructor(napi_env env, napi_callback_info info);
     static napi_value JSGet(napi_env env, napi_callback_info info);
     static napi_value JSPut(napi_env env, napi_callback_info info);
-
+    static napi_value GetCons(napi_env env);
 private:
-    static void DoPut(napi_env env, JSObjectWrapper *wrapper, char *key, size_t len, napi_valuetype type,
-                      napi_value value);
+    static void DoPut(napi_env env, JSObjectWrapper *wrapper, char *key, napi_valuetype type, napi_value value);
+    static void DoGet(napi_env env, JSObjectWrapper *wrapper, char *key, napi_value &value);
 };
 }
 

@@ -25,7 +25,7 @@
 namespace OHOS::ObjectStore {
 
 class FlatObjectWatcher : public TableWatcher {
-    void OnChanged(const std::string &sessionid, const std::vector<const std::string> &changedData) override;
+    void OnChanged(const std::string &sessionid, const std::vector<std::string> &changedData) override;
     void OnDeleted(const std::string &sessionid) override;
 };
 

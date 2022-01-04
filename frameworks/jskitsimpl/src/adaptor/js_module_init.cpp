@@ -28,38 +28,13 @@ extern const char _binary_distributed_data_object_abc_end[];*/
 
 static napi_value  DistributedDataObjectExport(napi_env env, napi_value exports)
 {
-    LOG_ERROR("start hanlu");
-    const char* distributedObjectName = "DistributedObject";
-    napi_value distributedObjectClass = nullptr;
     napi_status status;
-    static napi_property_descriptor distributedObjectDesc[] = {
-            DECLARE_NAPI_FUNCTION("put", OHOS::ObjectStore::JSDistributedObject::JSPut),
-            DECLARE_NAPI_FUNCTION("get", OHOS::ObjectStore::JSDistributedObject::JSGet),
-    };
-    status = napi_define_class(env, distributedObjectName, strlen(distributedObjectName), OHOS::ObjectStore::JSDistributedObject::JSConstructor, nullptr,
-                      sizeof(distributedObjectDesc) / sizeof(distributedObjectDesc[0]), distributedObjectDesc, &distributedObjectClass);
-    CHECK_EQUAL_WITH_RETURN_NULL(status, napi_ok);
-    g_instance = new napi_ref;
-    status = napi_create_reference(env, distributedObjectClass, 1, g_instance);
-    CHECK_EQUAL_WITH_RETURN_NULL(status, napi_ok);
-    /* status = napi_set_instance_data(env, instance, [](napi_env env,
-                                                      void* finalize_data,
-                                                      void* finalize_hint) {
-        napi_ref *instance = static_cast<napi_ref*>(finalize_data);
-        napi_status  status = napi_delete_reference(env, *instance);
-        CHECK_EQUAL_WITH_RETURN_VOID(status, napi_ok);
-        delete instance;
-    }, nullptr);
-    CHECK_EQUAL_WITH_RETURN_NULL(status, napi_ok); */
     static napi_property_descriptor desc[] = {
-            DECLARE_NAPI_FUNCTION("createObject", JSDistributedObjectStore::JSCreateObject),
             DECLARE_NAPI_FUNCTION("createObjectSync", JSDistributedObjectStore::JSCreateObjectSync),
-            DECLARE_NAPI_FUNCTION("destroyObject", JSDistributedObjectStore::JSDestroyObject),
             DECLARE_NAPI_FUNCTION("destroyObjectSync",JSDistributedObjectStore::JSDestroyObjectSync),
             DECLARE_NAPI_FUNCTION("sync", JSDistributedObjectStore::JSSync),
             DECLARE_NAPI_FUNCTION("on", JSDistributedObjectStore::JSOn),
             DECLARE_NAPI_FUNCTION("off", JSDistributedObjectStore::JSOff),
-            DECLARE_NAPI_PROPERTY("DistributedObject", distributedObjectClass),
     };
 
     status = napi_define_properties(env, exports, sizeof(desc) / sizeof(desc[0]), desc);
@@ -82,7 +57,6 @@ static napi_module storageModule = {
 extern "C" __attribute__((visibility("default"))) void NAPI_data_distributedDataObject_GetJSCode(const char** buf,
                                                                                            int* bufLen)
 {
-    LOG_ERROR("start hanlu");
     if (buf != nullptr) {
         *buf = _binary_distributed_data_object_js_start;
     }
@@ -107,6 +81,5 @@ extern "C" __attribute__((visibility("default"))) void NAPI_data_distributedData
 // distributeddataobject module register
 static __attribute__((constructor)) void RegisterModule()
 {
-    LOG_ERROR("start hanlu");
     napi_module_register(&storageModule);
 }

@@ -23,9 +23,10 @@
 #include "distributed_objectstore.h"
 
 namespace OHOS::ObjectStore {
+class WatcherProxy;
 class DistributedObjectStoreImpl : public DistributedObjectStore {
 public:
-    DistributedObjectStoreImpl() = default;
+    DistributedObjectStoreImpl() = default;// todo delete
     DistributedObjectStoreImpl(FlatObjectStore *flatObjectStore);
     ~DistributedObjectStoreImpl() override;
     uint32_t Get(const std::string &sessionId, DistributedObject *object) override;
@@ -39,7 +40,7 @@ public:
 private:
     DistributedObjectImpl *CacheObject(FlatObject *flatObject, FlatObjectStore *flatObjectStore);
     FlatObjectStore *flatObjectStore_ = nullptr;
-    std::map<DistributedObject *, std::shared_ptr<FlatObjectWatcher>> watchers_;
+    std::map<DistributedObject *, std::shared_ptr<WatcherProxy>> watchers_;
     std::shared_mutex dataMutex_{};
     std::vector<DistributedObjectImpl *> objects_{};
 };
@@ -47,7 +48,7 @@ private:
 class WatcherProxy : public FlatObjectWatcher {
 public:
     WatcherProxy(const std::shared_ptr<ObjectWatcher> objectWatcher);
-    void OnChanged(const std::string &sessionid, const std::vector<const std::string> &changedData) override;
+    void OnChanged(const std::string &sessionid, const std::vector<std::string> &changedData) override;
     void OnDeleted(const std::string &sessionid) override;
 
 private:
