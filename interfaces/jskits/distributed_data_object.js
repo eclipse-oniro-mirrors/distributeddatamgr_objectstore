@@ -8,6 +8,10 @@ function joinSession(obj, sessionId) {
     }
 
     let object = distributedObject.createObjectSync(sessionId);
+	if (object == null || object == undefined) {
+        console.error("create fail");
+        return obj;
+    }
     Object.keys(obj).forEach(key => {
         console.info("start define " + key);
         Object.defineProperty(object, key, {

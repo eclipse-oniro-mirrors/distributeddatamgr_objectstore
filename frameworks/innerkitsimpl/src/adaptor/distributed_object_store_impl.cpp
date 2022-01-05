@@ -190,9 +190,21 @@ DistributedObjectStore *DistributedObjectStore::GetInstance()
     if (instPtr == nullptr) {
         std::lock_guard<std::mutex> lock(instLock_);
         if (instPtr == nullptr) {
+            FlatObjectStore *flatObjectStore = new (std::nothrow) FlatObjectStore();
+            if (flatObjectStore == nullptr) {
+                LOG_ERROR("no memory for FlatObjectStore malloc!");
+                return nullptr;
+            }
+
+            uint32_t errCode = flatObjectStore->Open();
+            if (errCode != SUCCESS) {
+                LOG_ERROR("open failed");
+                delete flatObjectStore;
+                return nullptr;
+            }
             // Use instMemory to make sure this singleton not free before other object.
             // This operation needn't to malloc memory, we needn't to check nullptr.
-            instPtr = new (instMemory) DistributedObjectStoreImpl;
+            instPtr = new (instMemory) DistributedObjectStoreImpl(flatObjectStore);
         }
     }
     return instPtr;

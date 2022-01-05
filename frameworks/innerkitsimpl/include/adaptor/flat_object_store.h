@@ -31,7 +31,7 @@ class FlatObjectWatcher : public TableWatcher {
 
 class FlatObjectStore {
 public:
-    explicit FlatObjectStore(const std::string &bundleName, const std::string &storeName);
+    explicit FlatObjectStore();
     ~FlatObjectStore();
     uint32_t Open();
     uint32_t CreateObject(const std::string &sessionId);

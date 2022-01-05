@@ -170,6 +170,7 @@ uint32_t DistributedObjectImpl::GetType(const std::string &key, Type &type)
         type = keyType_[key];
         return SUCCESS;
     }
+    LOG_ERROR("DistributedObjectImpl::GetType key %s has no type",key.c_str());
     return ERR_KEY_TYPE;
 }
 

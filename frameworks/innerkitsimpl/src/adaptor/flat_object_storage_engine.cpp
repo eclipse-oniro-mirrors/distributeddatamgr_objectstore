@@ -35,8 +35,7 @@ uint32_t FlatObjectStorageEngine::Open()
         LOG_INFO("FlatObjectDatabase: No need to reopen it");
         return SUCCESS;
     }
-    storeManager_ = std::make_shared<DistributedDB::KvStoreDelegateManager>("objectstore",
-        "user0");
+    storeManager_ = std::make_shared<DistributedDB::KvStoreDelegateManager>("objectstore", "user0");
     if (storeManager_ == nullptr) {
         LOG_ERROR("FlatObjectStorageEngine::make shared fail");
         return ERR_MOMEM;
@@ -72,18 +71,22 @@ uint32_t FlatObjectStorageEngine::CreateTable(const std::string &key)
     DistributedDB::DBStatus status;
     DistributedDB::KvStoreNbDelegate::Option option = { true, true,
         false }; // createIfNecessary, isMemoryDb, isEncryptedDb
+    LOG_INFO("start create table");
     storeManager_->GetKvStore(key, option,
         [&status, &kvStore](DistributedDB::DBStatus dbStatus, DistributedDB::KvStoreNbDelegate *kvStoreNbDelegate) {
             status = dbStatus;
             kvStore = kvStoreNbDelegate;
+            LOG_INFO("create table result %{public}d", status);
         });
     bool autoSync = true;
     DistributedDB::PragmaData data = static_cast<DistributedDB::PragmaData>(&autoSync);
+    LOG_INFO("start Pragma");
     status = kvStore->Pragma(DistributedDB::AUTO_SYNC, data);
     if (status != DistributedDB::DBStatus::OK) {
         LOG_ERROR("FlatObjectStorageEngine::CreateTable %s getkvstore fail[%d]", key.c_str(), status);
         return ERR_DE_GETKV_FAIL;
     }
+    LOG_INFO("create table %{public}s success", key.c_str());
     delegates.insert_or_assign(key, kvStore);
     return SUCCESS;
 }
@@ -91,21 +94,24 @@ uint32_t FlatObjectStorageEngine::CreateTable(const std::string &key)
 uint32_t FlatObjectStorageEngine::GetTable(const std::string &key, std::map<Field, Value> &result)
 {
     if (!opened_) {
+        LOG_ERROR("not opened %{public}s", key.c_str());
         return ERR_DB_NOT_INIT;
     }
     std::unique_lock<std::shared_mutex> lock(operationMutex_);
     if (delegates.count(key) == 0) {
-        LOG_INFO("FlatObjectStorageEngine::GetTable %s not exist", key.c_str());
+        LOG_INFO("FlatObjectStorageEngine::GetTable %{public}s not exist", key.c_str());
         return ERR_DE_NOT_EXIST;
     }
     result.clear();
     DistributedDB::KvStoreResultSet *resultSet = nullptr;
     Key emptyKey;
+    LOG_INFO("start GetEntries");
     DistributedDB::DBStatus status = delegates.at(key)->GetEntries(emptyKey, resultSet);
     if (status != DistributedDB::DBStatus::OK) {
         LOG_INFO("FlatObjectStorageEngine::GetTable %s GetEntries fail", key.c_str());
         return ERR_DB_GET_FAIL;
     }
+    LOG_INFO("end GetEntries");
     while (resultSet->IsAfterLast()) {
         DistributedDB::Entry entry;
         status = resultSet->GetEntry(entry);
@@ -139,7 +145,13 @@ uint32_t FlatObjectStorageEngine::UpdateItems(const std::string &key, std::map<F
         items.insert(items.end(), entry);
         iter++;
     }
-    delegate->PutBatch(items);
+    LOG_INFO("start PutBatch");
+    auto status = delegate->PutBatch(items);
+    if (status != DistributedDB::DBStatus::OK) {
+        LOG_ERROR("%s PutBatch fail[%d]", key.c_str(), status);
+        return ERR_CLOSE_STORAGE;
+    }
+    LOG_INFO("end PutBatch");
     return SUCCESS;
 }
 
@@ -153,11 +165,13 @@ uint32_t FlatObjectStorageEngine::DeleteTable(const std::string &key)
         LOG_INFO("FlatObjectStorageEngine::GetTable %s not exist", key.c_str());
         return ERR_DE_NOT_EXIST;
     }
+    LOG_INFO("start DeleteTable %{public}s", key.c_str());
     auto status = storeManager_->CloseKvStore(delegates.at(key));
     if (status != DistributedDB::DBStatus::OK) {
         LOG_ERROR("FlatObjectStorageEngine::CloseKvStore %s CloseKvStore fail[%d]", key.c_str(), status);
         return ERR_CLOSE_STORAGE;
     }
+    LOG_INFO("end DeleteTable");
     delegates.erase(key);
     return SUCCESS;
 }
@@ -169,9 +183,10 @@ uint32_t FlatObjectStorageEngine::GetItem(const std::string &key, const Field &i
     }
     std::unique_lock<std::shared_mutex> lock(operationMutex_);
     if (delegates.count(key) == 0) {
-        LOG_ERROR("FlatObjectStorageEngine::GetItem %s not exist", key.c_str());
+        LOG_ERROR("FlatObjectStorageEngine::GetItem %{public}s not exist", key.c_str());
         return ERR_DE_NOT_EXIST;
     }
+    LOG_INFO("start Get %{public}s", key.c_str());
     DistributedDB::DBStatus status = delegates.at(key)->Get(itemKey, value);
     if (status != DistributedDB::DBStatus::OK) {
         std::string itemStr;
@@ -179,6 +194,7 @@ uint32_t FlatObjectStorageEngine::GetItem(const std::string &key, const Field &i
         LOG_ERROR("FlatObjectStorageEngine::GetItem %s item not exist", itemStr.c_str());
         return status;
     }
+    LOG_INFO("end Get %{public}s", key.c_str());
     return SUCCESS;
 }
 
@@ -200,12 +216,14 @@ uint32_t FlatObjectStorageEngine::RegisterObserver(const std::string &key, std::
     auto delegate = delegates.at(key);
     std::vector<uint8_t> tmpKey;
     tmpKey.assign(key.begin(), key.end());
+    LOG_INFO("start RegisterObserver %{public}s", key.c_str());
     DistributedDB::DBStatus status =
         delegate->RegisterObserver(tmpKey, DistributedDB::ObserverMode::OBSERVER_CHANGES_NATIVE, watcher.get());
     if (status != DistributedDB::DBStatus::OK) {
         LOG_ERROR("FlatObjectStorageEngine::RegisterObserver watch err %d", status);
         return ERR_REGISTER;
     }
+    LOG_INFO("end RegisterObserver %{public}s", key.c_str());
     observerMap_.insert_or_assign(key, watcher);
     return SUCCESS;
 }
@@ -228,11 +246,13 @@ uint32_t FlatObjectStorageEngine::UnRegisterObserver(const std::string &key)
     }
     auto delegate = delegates.at(key);
     std::shared_ptr<TableWatcher> watcher = iter->second;
+    LOG_INFO("start UnRegisterObserver %{public}s", key.c_str());
     DistributedDB::DBStatus status = delegate->UnRegisterObserver(watcher.get());
     if (status != DistributedDB::DBStatus::OK) {
         LOG_ERROR("FlatObjectStorageEngine::UnRegisterObserver unRegister err %d", status);
         return ERR_UNRIGSTER;
     }
+    LOG_INFO("end UnRegisterObserver %{public}s", key.c_str());
     observerMap_.erase(key);
     return SUCCESS;
 }

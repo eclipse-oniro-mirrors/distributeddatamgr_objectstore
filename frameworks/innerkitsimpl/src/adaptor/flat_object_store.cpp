@@ -20,13 +20,8 @@
 #include "string_utils.h"
 
 namespace OHOS::ObjectStore {
-namespace {
-const std::map<Bytes, Bytes> EMPTY_FIELDS = {};
-const std::string DEFAULT_USER_ID = "0";
-} // namespace
 
-FlatObjectStore::FlatObjectStore(const std::string &bundleName, const std::string &storeName)
-    : bundleName_(bundleName), storeName_(storeName)
+FlatObjectStore::FlatObjectStore()
 {
     storageEngine_ = std::make_shared<FlatObjectStorageEngine>();
 }
