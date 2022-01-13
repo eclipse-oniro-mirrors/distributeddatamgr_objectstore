@@ -182,9 +182,6 @@ WatcherProxy::WatcherProxy(const std::shared_ptr<ObjectWatcher> objectWatcher)
     : objectWatcher_(objectWatcher)
 {}
 
-WatcherProxy::~WatcherProxy()
-{}
-
 void WatcherProxy::OnChanged(const Bytes &id)
 {
     std::string str;

@@ -18,11 +18,9 @@
 
 namespace OHOS::ObjectStore {
 #define DISABLE_COPY_AND_MOVE(ClassName) \
-do { \
     ClassName(const ClassName &) = delete; \
-    ClassName((ClassName) &&) = delete; \
-    (ClassName)& operator=(const ClassName &) = delete; \
-    (ClassName)& operator=((ClassName) &&) = delete \
-} while (0)
+    ClassName(ClassName &&) = delete; \
+    ClassName& operator=(const ClassName &) = delete; \
+    ClassName& operator=(ClassName &&) = delete
 }
 #endif // MACRO_H
