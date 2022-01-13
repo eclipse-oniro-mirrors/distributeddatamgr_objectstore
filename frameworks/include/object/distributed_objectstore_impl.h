@@ -45,6 +45,7 @@ private:
 class WatcherProxy : public FlatObjectWatcher {
 public:
     WatcherProxy(const std::shared_ptr<ObjectWatcher> objectWatcher);
+    ~WatcherProxy();
     void OnChanged(const Bytes &id) override;
     void OnDeleted(const Bytes &id) override;
 private:
